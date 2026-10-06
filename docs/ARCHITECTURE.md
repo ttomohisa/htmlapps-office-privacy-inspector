@@ -20,7 +20,7 @@ dist/index.self-extract.html Generated gzip self-extracting artifact
 dist/build-size-report.json    Generated size and embedded-asset storage report
 ```
 
-`dist/index.html` and `dist/index.self-extract.html` are generated and must not be edited manually.
+`dist/index.html` and `dist/index.self-extract.html` are generated and must not be edited manually. The public root-level `office-privacy-inspector.html` is also generated: the default canonical build copies `dist/index.html` to it byte-for-byte. An explicit `-OutputPath` leaves the root entry point unchanged. The repository check verifies root/source/config parity before rebuilding.
 
 
 ## Reusable component layer

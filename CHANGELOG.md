@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.1.1 — 2026-10-06
+
+- Standardize the header language targets as EN / JA and synchronize localized action labels and tooltips.
+- Refresh the static header version fallback and preserve the existing fully-local privacy badge and responsive layout.
+- Add runtime header regressions for fresh language detection, repeated toggles, saved preferences, unavailable storage, and release-version consistency.
+- Keep the public root-level standalone HTML synchronized through the canonical build; add pre-build source/config parity checks and run the full regressions against that entry point.
+
 ## 1.1.0 — 2026-10-06
 
 - Add local, editable-name counts-only inspection summary JSON with explicit completeness, cleanup restrictions, and verified before/after counts. Omit document values, names, paths, URLs, and errors; unknown counts are null.

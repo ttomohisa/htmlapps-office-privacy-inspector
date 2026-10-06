@@ -18,6 +18,8 @@ GitHub Pages serves the initial HTML. File reading, OOXML inspection, cleanup, a
 
 [![Office Privacy Inspector screenshot](assets/screenshot-en.png)](https://ttomohisa.github.io/htmlapps-office-privacy-inspector/)
 
+The header uses EN to switch to English and JA to switch to Japanese. It shows the app version as `vMAJOR.MINOR.PATCH`; the privacy badge reads “Fully local processing” / “完全ローカル処理”.
+
 ## Features
 
 - **Inspect common Office metadata** — Review Creator, Last Modified By, Company, Manager, editing time, Custom Properties, and other Core / Extended Properties.
@@ -39,7 +41,7 @@ Open the [GitHub Pages demo](https://ttomohisa.github.io/htmlapps-office-privacy
 
 ### Use the standalone HTML
 
-1. Download `dist/index.html` from this repository or from a build artifact.
+1. Download the root-level [`office-privacy-inspector.html`](office-privacy-inspector.html), or use `dist/index.html` from a build artifact.
 2. Open the file in a current Chrome or Edge browser.
 3. Choose a DOCX / XLSX / PPTX file or drag it onto the page.
 
@@ -185,7 +187,9 @@ build-standalone.bat
 
 The build embeds the canonical SVG icon, validates the standalone HTML, blocks unresolved placeholders, generates the self-extracting build, and produces build / dependency manifests.
 
-Do not edit `dist/index.html` directly. Edit `src/index.template.html` and rebuild.
+The default build also refreshes the public root-level `office-privacy-inspector.html` with the exact bytes from `dist/index.html`. An explicit `-OutputPath` creates an independent export and leaves the root release unchanged.
+
+Do not edit either generated HTML directly. Edit `src/index.template.html` and rebuild. `scripts/check-repository.ps1` requires Node.js 24+ and checks the committed root release against the source and app configuration before rebuilding; the full test suite also runs against source, dist, and the root release.
 
 ## Privacy and runtime network protection
 

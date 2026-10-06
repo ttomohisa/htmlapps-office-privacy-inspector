@@ -3,7 +3,7 @@
   "name": "Office Privacy Inspector",
   "nameJa": "Office Privacy Inspector",
   "slug": "office-privacy-inspector",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Inspect privacy-related metadata and hidden information in Office Open XML files, surface actual findings clearly, offer accessible cleanup actions, and keep risky packages inspection-only in the browser.",
   "descriptionJa": "Office Open XMLファイルのメタデータや非表示情報を確認し、見つかった内容を分かりやすく表示して、共有前の確認と安全なクリーンアップを迷わず進められるようにします。書き換えが安全でないファイルは検査のみに切り替えます。",
   "defaultLanguage": "auto",

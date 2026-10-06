@@ -56,6 +56,9 @@ jobs:
           $env:OFFICE_TEST_HTML = Join-Path $PWD "dist/index.html"
           npm --prefix tests test
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $env:OFFICE_TEST_HTML = Join-Path $PWD "office-privacy-inspector.html"
+          npm --prefix tests test
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Upload standalone artifact
         uses: actions/upload-artifact@v7
