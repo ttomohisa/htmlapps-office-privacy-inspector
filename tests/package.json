@@ -1,0 +1,7 @@
+{
+  "name": "office-privacy-inspector-tests",
+  "private": true,
+  "scripts": { "test": "node --test *.test.cjs" },
+  "engines": { "node": ">=24" },
+  "devDependencies": { "jsdom": "26.1.0" }
+}

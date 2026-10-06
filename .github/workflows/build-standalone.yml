@@ -7,6 +7,8 @@ on:
       - main
     paths:
       - "src/**"
+      - "tests/**"
+      - "office-privacy-inspector.html"
       - "scripts/**"
       - "app.config.json"
       - "dependencies.json"
@@ -30,6 +32,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
 
+      - name: Setup Node.js for regression tests
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+
+      - name: Install pinned test-only dependencies
+        run: npm ci --prefix tests --ignore-scripts --no-audit --no-fund
+
       - name: Validate PowerShell syntax and encoding
         shell: powershell
         run: .\scripts\check-powershell-syntax.ps1
@@ -37,6 +47,15 @@ jobs:
       - name: Build and verify standalone HTML
         shell: pwsh
         run: ./scripts/check-repository.ps1
+
+      - name: Run Office privacy regression tests
+        shell: pwsh
+        run: |
+          npm --prefix tests test
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $env:OFFICE_TEST_HTML = Join-Path $PWD "dist/index.html"
+          npm --prefix tests test
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Upload standalone artifact
         uses: actions/upload-artifact@v7

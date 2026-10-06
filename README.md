@@ -144,6 +144,18 @@ The repository includes a workflow that builds the standalone HTML and deploys `
 
 The workflow runs the template repository checks before deployment and publishes both the readable standalone HTML and the self-extracting build artifacts.
 
+
+
+## Counts-only inspection summary
+
+After inspection, choose **Save inspection summary (.json)**. The editable default filename is `inspection-summary.json`, independent of the Office filename. The locally generated JSON contains schema/app versions, the detected format, supported-check completeness, category counts, and cleanup restrictions. After successful cleanup reinspection it also contains before/after counts.
+
+Source filenames, authors, property names/values, comment or note text, paths, URLs, and raw errors are excluded. No report is stored by the app or sent to a server. If inspection is partial, category counts are `null`; `null` also means a category is not inspected or not applicable, never zero. A failed reinspection has no after counts. Counts describe detected findings, not all document content. Zero findings do not guarantee safety or anonymity. Review the report filename and counts before sharing.
+
+Completeness covers the implemented checks rather than a full OOXML structural audit. Missing referenced worksheet/slide targets are not exhaustively validated. A missing required Word document part is reported as partial and blocks cleanup.
+
+Packages with duplicate normalized ZIP entry names (including slash/backslash collisions) are rejected before inspection or cleanup; the app never selects one duplicate entry.
+
 ## Development and build layout
 
 ```text

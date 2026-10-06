@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.1.0 — 2026-10-06
+
+- Add local, editable-name counts-only inspection summary JSON with explicit completeness, cleanup restrictions, and verified before/after counts. Omit document values, names, paths, URLs, and errors; unknown counts are null.
+- Reject ambiguous duplicate normalized ZIP entry names instead of silently choosing one entry; mark missing required Word document parts as partial and cleanup-blocked.
+- Guard cleanup confirmation and summary export across source changes and in-flight cleanup.
+- Add automated synthetic ZIP, Office fixture, report privacy, and lifecycle regression tests.
+
+
 ## 1.0.0 - Final release - 2026-09-29
 
 - Promoted Office Privacy Inspector to the first stable release after the v0.9.x release-candidate UX pass.
