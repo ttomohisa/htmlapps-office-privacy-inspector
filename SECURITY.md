@@ -54,3 +54,10 @@ Before adding or upgrading a package:
 - Refresh the selected lock entry with the dependency scripts; never hand-edit a lock hash to bypass a mismatch.
 - Rebuild with a clean cache.
 - Test with the network disabled.
+
+
+## Inspection summary boundary
+
+Inspection summaries are assembled from an explicit allowlist of fixed labels, counts, and app/schema versions. Do not serialize inspection result objects: they contain sensitive document data. Filenames and raw parser errors must never enter the JSON. A generic editable report filename avoids copying the source name by default; users should review their chosen name and the counts before sharing. Null counts represent unknown or unsupported coverage. Neither complete supported checks nor zero findings establish safety or anonymity.
+
+Reject duplicate normalized ZIP part names before adding them to the directory map. Ambiguous packages must not be inspected by selecting a winner, and must not be rebuilt. This does not add support for ZIP64, encryption, signatures, or macro cleanup.

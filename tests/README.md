@@ -96,3 +96,14 @@ Final release v1.0.0:
 - Existing cleanup fixtures verify that successful cleanup automatically reinspects the generated copy and scrolls the completion result into view below the sticky header.
 - Japanese / English release screenshots are captured from the generated standalone HTML.
 - v0.9.1 punctuation-only metadata and finding-navigation regressions remain part of the final release checks.
+
+
+## Automated regression tests (v1.1.0)
+
+Run with Node.js 24+: `npm ci --prefix tests --ignore-scripts --no-audit --no-fund`, then `npm --prefix tests test`. `tests/package-lock.json` pins test-only jsdom dependencies; none are embedded in the app. The suite executes actual app code in Node with jsdom's XML/HTML DOM and native compression streams. This is DOM emulation, not browser or Office compatibility verification.
+
+Coverage includes counts-only JSON and distinctive private strings, edited generic filenames, reset/replacement/error/cleanup state, signature/macro/partial protection fixtures, duplicate ZIP names and separator collisions, stored/deflate/ZIP64/encrypted controls, and unchanged unrelated ZIP local records and bytes after cleanup. Existing combined XLSX/PPTX fixtures intentionally contain macro parts and remain cleanup-blocked.
+
+Set `OFFICE_TEST_HTML` to an absolute generated HTML path to repeat the suite against a release. CI tests source and the canonical readable build. Both generated variants must also pass the canonical PowerShell checks. Real browser file downloads, narrow layouts, keyboard behavior, file:// loading, runtime network observation, and opening cleaned copies in Word/Excel/PowerPoint remain separate manual checks.
+
+Review regressions additionally exercise the actual failed-verification catch path, delayed ordinary reinspection failures before and after a replacement's successful cleanup, cleanup label reset, and a missing required Word document part.

@@ -2064,3 +2064,17 @@ Office Privacy Inspector は、
 をユーザー自身が判断できるようにする。
 
 Officeファイルは外部サーバーへ送信せず、ブラウザ内で処理する。
+
+
+# v1.1.0 — Counts-only inspection summary
+
+- Add a user-initiated local JSON summary download beside the current inspection. Use an editable generic `inspection-summary.json` default with a fixed `.json` extension; never derive it from the source filename.
+- Schema version 1 includes only app version, detected DOCX/XLSX/PPTX family, supported-check completeness, fixed category counts, allowlisted cleanup restriction codes, cleanup status, and the explicit safety/anonymity caveat. `inspection` is the original/before snapshot; `cleanup.after` exists only for successful, verified reinspection of the same source.
+- Exclude original/output document filenames, property names and values, authors, comments/notes, text snippets, paths, URLs, and raw errors. Do not persist report data or make network requests. The chosen report filename stays outside the JSON payload.
+- For a partial inspection all category counts are `null`, conservatively indicating unknown coverage. Categories not inspected by this version or not applicable to the format are also `null`. Failed reinspection uses status `reinspection_failed` and `after: null`; no cleanup uses `not_performed`. A complete result describes only the supported checks; zero findings do not mean safe or anonymous.
+- Clear report availability immediately on a new source, reset, or inspection error. Disable export during cleanup. Reject stale inspections and cleanup confirmations after source replacement. Keep a user-edited summary filename during language changes and cleanup of the same source; reset it for a new source.
+- Reject duplicate normalized ZIP entry names before insertion, including backslash/slash collisions, through the existing unsupported/broken-package path. Never choose a duplicate winner or clean such a package. Preserve existing encryption, signature, macro, duplicate-relationship, and partial-inspection restrictions.
+- Regression requirements: distinctive synthetic secrets never enter JSON; stored/deflate and malformed/ZIP64/encrypted controls; DOCX/XLSX/PPTX and macro/signature/partial fixtures; cleanup keeps unrelated local ZIP records and uncompressed bytes unchanged; edited filenames; replacement/reset/error; verified and failed after state.
+
+- Treat a missing required `word/document.xml` as a partial DOCX inspection and block cleanup. Keep reporting failed cleanup verification as `reinspection_failed` after discarding unsafe output; late failures cannot change a newer source or its successful cleanup.
+- Completeness is scoped to implemented checks, not full OOXML structural validation. Existing missing referenced worksheet/slide-target coverage is not expanded by this change.

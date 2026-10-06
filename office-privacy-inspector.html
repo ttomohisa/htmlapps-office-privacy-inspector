@@ -419,6 +419,15 @@
       </div>
     </section>
 
+    <section class="panel section-panel" id="reportSection" hidden aria-labelledby="reportTitle">
+      <div class="section-heading"><div><h2 id="reportTitle" data-i18n="reportTitle">検査サマリーを保存</h2><p data-i18n="reportBody">件数・検査状況・クリーンアップの制限だけをJSONに保存します。元のファイル名や文書内の値は含めません。</p></div></div>
+      <p class="cleanup-scope-note" data-i18n="reportCaveat">検出0件でも安全・匿名とは限りません。一部未検査の件数は不明として保存します。本文や画像は別途確認してください。</p>
+      <label class="output-name-field"><span data-i18n="reportFilenameLabel">サマリーのファイル名</span><div class="output-name-control"><input id="reportFilenameInput" type="text" value="inspection-summary" maxlength="180" autocomplete="off" spellcheck="false" aria-describedby="reportFilenameHint"><span class="output-name-extension">.json</span></div></label>
+      <p class="cleanup-scope-note" id="reportFilenameHint" data-i18n="reportFilenameHint">文書名は初期ファイル名にも使用しません。共有する場合は、入力した名前と件数も確認してください。</p>
+      <button class="button" id="downloadReportButton" type="button" disabled data-i18n="downloadReport">検査サマリーを保存 (.json)</button>
+      <p class="cleanup-save-status" id="reportSaveStatus" role="status" aria-live="polite"></p>
+    </section>
+
     <section class="panel section-panel" id="packageSection" hidden aria-labelledby="packageSectionTitle">
       <div class="section-heading">
         <div><h2 id="packageSectionTitle" data-i18n="packageSectionTitle">ファイル構造の注意</h2><p data-i18n="packageSectionBody">署名、マクロ関連データ、一部解析失敗など、書き換え可否に影響する情報を表示します。</p></div>
@@ -597,6 +606,7 @@
         <li data-i18n="helpStep2">作成者情報、文書情報、カスタムプロパティを確認します。</li>
         <li data-i18n="helpStep3">削除対象を選んでクリーンアップ済みコピーを作成します。生成後は自動で再検査し、削除前 / 削除後と残っている確認項目を表示します。元ファイルは上書きしません。</li>
       </ol>
+      <p data-i18n="helpReport">「検査サマリーを保存」で件数のみのJSONを保存できます。クリーンアップ後は再検査が完了した場合に削除前後の件数を含みます。0件は安全・匿名の保証ではありません。</p>
       <h3 data-i18n="helpPrivacyTitle">プライバシー</h3>
       <p data-i18n="helpPrivacyBody">Officeファイルの読み込みと解析はブラウザ内で行われ、このアプリから外部サーバーへ送信されません。実行時の外部通信もCSPで無効化しています。</p>
       <h3 data-i18n="helpChecksTitle">現在確認できるもの</h3>
@@ -623,8 +633,8 @@
     (() => {
       'use strict';
 
-      const APP_CONFIG = {"$schema":"./schemas/app-config.schema.json","name":"Office Privacy Inspector","nameJa":"Office Privacy Inspector","slug":"office-privacy-inspector","version":"1.0.0","description":"Inspect privacy-related metadata and hidden information in Office Open XML files, surface actual findings clearly, offer accessible cleanup actions, and keep risky packages inspection-only in the browser.","descriptionJa":"Office Open XMLファイルのメタデータや非表示情報を確認し、見つかった内容を分かりやすく表示して、共有前の確認と安全なクリーンアップを迷わず進められるようにします。書き換えが安全でないファイルは検査のみに切り替えます。","defaultLanguage":"auto","repository":{"owner":"ttomohisa","name":"htmlapps-office-privacy-inspector"},"build":{"output":"dist/index.html","blockRuntimeNetwork":true,"selfExtract":{"enabled":true,"output":"dist/index.self-extract.html"},"sizeBudget":{"readableWarningMb":25,"selfExtractWarningMb":12}}};
-      const BUILD_MANIFEST = {"schemaVersion":2,"builder":"single-html-app-template/1.3","generatedAtUtc":"2026-09-28T16:41:07.3032601Z","app":{"name":"Office Privacy Inspector","slug":"office-privacy-inspector","version":"1.0.0"},"dependencies":[]};
+      const APP_CONFIG = {"$schema":"./schemas/app-config.schema.json","name":"Office Privacy Inspector","nameJa":"Office Privacy Inspector","slug":"office-privacy-inspector","version":"1.1.0","description":"Inspect privacy-related metadata and hidden information in Office Open XML files, surface actual findings clearly, offer accessible cleanup actions, and keep risky packages inspection-only in the browser.","descriptionJa":"Office Open XMLファイルのメタデータや非表示情報を確認し、見つかった内容を分かりやすく表示して、共有前の確認と安全なクリーンアップを迷わず進められるようにします。書き換えが安全でないファイルは検査のみに切り替えます。","defaultLanguage":"auto","repository":{"owner":"ttomohisa","name":"htmlapps-office-privacy-inspector"},"build":{"output":"dist/index.html","blockRuntimeNetwork":true,"selfExtract":{"enabled":true,"output":"dist/index.self-extract.html"},"sizeBudget":{"readableWarningMb":25,"selfExtractWarningMb":12}}};
+      const BUILD_MANIFEST = {"schemaVersion":2,"builder":"single-html-app-template/1.3","generatedAtUtc":"2026-10-06T03:53:49.4915132Z","app":{"name":"Office Privacy Inspector","slug":"office-privacy-inspector","version":"1.1.0"},"dependencies":[]};
       const assetBundle = {"schemaVersion":2,"dependencies":{}};
       const blobUrls = new Set();
       const assetByteCache = new Map();
@@ -667,6 +677,7 @@
 
       const translations = {
         ja: {
+          reportTitle: '検査サマリーを保存', reportBody: '件数・検査状況・クリーンアップの制限だけをJSONに保存します。元のファイル名、作成者名、プロパティ値、コメント、ノート、パス、URL、エラー詳細は含めません。', reportCaveat: '検出0件でも安全・匿名とは限りません。一部未検査の件数は不明として保存します。本文や画像は別途確認してください。', reportFilenameLabel: 'サマリーのファイル名', reportFilenameHint: '文書名は初期ファイル名にも使用しません。共有する場合は、入力した名前と件数も確認してください。', downloadReport: '検査サマリーを保存 (.json)', reportSaved: '検査サマリーの保存を開始しました', reportFailed: '検査サマリーを保存できませんでした。もう一度お試しください。', helpReport: '「検査サマリーを保存」で件数のみのJSONを保存できます。クリーンアップ後は再検査が完了した場合に削除前後の件数を含みます。未検査や対象外の件数はnull（不明）です。0件は安全・匿名の保証ではありません。',
           brandMeta: '作成者・コメント・非表示情報を共有前に確認', helpTitle: '使い方と注意事項', close: '閉じる',
           introTitle: 'Officeファイルを共有前に確認', lead: 'DOCX / XLSX / PPTXに残っている作成者情報などを確認します。Word・Excel・PowerPointでは形式固有の非表示情報や外部参照も検査します。', localBadge: '完全ローカル処理',
           uploadTitle: 'Officeファイルを選択', uploadBody: '作成者などのメタデータを確認できます。DOCM / XLSM / PPTMは検査のみ対応です。', dropTitle: 'Officeファイルをここにドロップ', dropSub: 'DOCX / XLSX / PPTX、マクロ付き形式は検査のみ', pickFile: 'ファイルを選択',
@@ -691,6 +702,7 @@
           extApplication: '作成アプリ', extAppVersion: 'アプリバージョン', extCompany: '会社名', extManager: '管理者名', extTotalTime: '総編集時間', extTemplate: 'テンプレート', extPages: 'ページ数', extWords: '単語数', extCharacters: '文字数', extSlides: 'スライド数', extNotes: 'ノート数', extHiddenSlides: '非表示スライド数', extMMClips: 'メディアクリップ数', extSharedDoc: '共有文書', extHyperlinksChanged: 'ハイパーリンク変更', extLinksUpToDate: 'リンク更新済み', customType: '型', customValue: '値', minutes: '分', yes: 'はい', no: 'いいえ'
         },
         en: {
+          reportTitle: 'Save inspection summary', reportBody: 'Save counts, inspection status, and cleanup restrictions as JSON. Source filenames, authors, property values, comments, notes, paths, URLs, and error details are excluded.', reportCaveat: 'Zero findings do not mean the file is safe or anonymous. Partially inspected counts are unknown. Review document text and images separately.', reportFilenameLabel: 'Summary file name', reportFilenameHint: 'The default name does not use the document name. Review your chosen name and the counts before sharing the summary.', downloadReport: 'Save inspection summary (.json)', reportSaved: 'Inspection summary download started', reportFailed: 'Could not save the inspection summary. Please try again.', helpReport: 'Use Save inspection summary to download counts-only JSON. After cleanup, it includes before/after counts only when reinspection succeeds. Uninspected or inapplicable counts are null (unknown). Zero findings do not guarantee safety or anonymity.',
           brandMeta: 'Review authors, comments & hidden data before sharing', helpTitle: 'How to use & notes', close: 'Close',
           introTitle: 'Check Office files before sharing', lead: 'Inspect privacy-related metadata in DOCX / XLSX / PPTX files. Word, Excel, and PowerPoint files also receive format-specific checks for hidden data and external references.', localBadge: 'Fully local processing',
           uploadTitle: 'Choose an Office file', uploadBody: 'Inspect metadata and format-specific hidden information. DOCM / XLSM / PPTM are supported for inspection only.', dropTitle: 'Drop an Office file here', dropSub: 'DOCX / XLSX / PPTX; macro-enabled formats are inspection-only', pickFile: 'Choose file',
@@ -728,7 +740,10 @@
       let cleanupFilename = '';
       let cleanupAfterResult = null;
       let cleanupReinspectionError = null;
+      let cleanupVerificationFailed = false;
       let cleanupSelectedTargetsSnapshot = [];
+      let cleanupBusy = false;
+      let reportReadyGeneration = -1;
       function filenameParts(name) {
         const source = String(name || 'office-file');
         const match = source.match(/^(.*?)(\.[^.]+)?$/);
@@ -794,7 +809,7 @@
         document.title = APP_CONFIG.name;
         $('#brandName').textContent = APP_CONFIG.name;
         $('#footerName').textContent = APP_CONFIG.name;
-        if (currentResult) { const selection=selectedCleanupTargets(); const preserveCleanupOutput=Boolean(cleanupBlob); if (preserveCleanupOutput && $('#cleanupFilenameInput')?.value) cleanupFilename=editedCleanupFilename(); renderResult(currentResult,{cleanupSelection:selection,preserveCleanupOutput}); }
+        if (currentResult) { const selection=selectedCleanupTargets(); const preserveCleanupOutput=Boolean(cleanupBlob) || cleanupVerificationFailed; if (cleanupBlob && $('#cleanupFilenameInput')?.value) cleanupFilename=editedCleanupFilename(); renderResult(currentResult,{cleanupSelection:selection,preserveCleanupOutput}); }
         if (!$('#errorState').hidden && $('#errorState').dataset.errorCode) renderError($('#errorState').dataset.errorCode, $('#errorDetails').textContent);
       }
 
@@ -863,6 +878,8 @@
           if (recordEnd > bytes.byteLength) throw new AppError('broken');
           const nameBytes = new Uint8Array(bytes.subarray(nameStart, nameEnd));
           const name = decodeZipName(nameBytes, Boolean(flags & 0x0800)).replace(/\\/g, '/');
+          // Ambiguous part names must never select a winner or be rewritten.
+          if (entries.has(name)) throw new AppError('broken', 'Duplicate normalized ZIP entry names are not supported.');
           entries.set(name, { name, index, versionMadeBy, versionNeeded, flags, method, modTime, modDate, crc32, compressedSize, uncompressedSize, localOffset, diskStart, internalAttrs, externalAttrs, nameBytes, centralExtra: new Uint8Array(bytes.subarray(nameEnd, extraEnd)), centralComment: new Uint8Array(bytes.subarray(extraEnd, recordEnd)), centralRaw: new Uint8Array(bytes.subarray(offset, recordEnd)) });
           offset = recordEnd;
         }
@@ -1011,6 +1028,7 @@
         const result = { comments: [], revisions: [], hiddenText: [], rsidValues: [], rsidCount: 0, externalRelationships: [], embeddedObjects: [], customXml: [], macroParts: [] };
         const readXmlPart = async (path, required = false) => safeReadXmlPart(bytes, entries, path, failures, { required });
 
+        if (!entries.has('word/document.xml')) recordPartialFailure(failures, 'word/document.xml', new AppError('broken', 'Missing required Word document part.'));
         const hiddenCharacterStyles = new Set();
         const stylesDoc = await readXmlPart('word/styles.xml');
         if (stylesDoc) {
@@ -1509,7 +1527,7 @@
       }
       function releaseCleanupOutput() {
         if (cleanupBlobUrl) URL.revokeObjectURL(cleanupBlobUrl);
-        cleanupBlobUrl = ''; cleanupBlob = null; cleanupFilename = ''; cleanupAfterResult = null; cleanupReinspectionError = null; cleanupSelectedTargetsSnapshot = [];
+        cleanupBlobUrl = ''; cleanupBlob = null; cleanupFilename = ''; cleanupAfterResult = null; cleanupReinspectionError = null; cleanupVerificationFailed = false; cleanupSelectedTargetsSnapshot = [];
         $('#cleanupOutput').hidden = true; delete $('#cleanupOutput').dataset.status; $('#cleanupSaveStatus').textContent = ''; $('#cleanupReinspectionWarning').hidden = true;
       }
       function syncNoteCleanupControls(changedInput = null) {
@@ -1522,6 +1540,7 @@
         syncNoteCleanupControls(changedInput); const total = $$('#cleanupList input[type="checkbox"]').length; const selected = selectedCleanupTargets().length; $('#cleanupSelectionCount').textContent = formatTemplate(translate('cleanupSelected'), { selected:formatNumber(selected), total:formatNumber(total) }); $('#createCleanedButton').disabled = selected === 0; syncQuickCleanupActions(); if (resetOutput) releaseCleanupOutput();
       }
       function renderCleanup(result, options = {}) {
+        $('#createCleanedButton').textContent = translate(cleanupBusy ? 'cleanupWorking' : 'createCleaned');
         const preserveOutput = Boolean(options.preserveOutput); const preservedSelection = Array.isArray(options.selection) ? new Set(options.selection) : null;
         if (!preserveOutput) releaseCleanupOutput(); const list = $('#cleanupList'); list.replaceChildren(); const groups = [];
         const blockedReasons = result.package?.cleanupBlockedReasons || [];
@@ -1569,6 +1588,78 @@
       function inspectionSummary(result) {
         const rows=buildResultRows(result); const formatSpecific=formatSpecificFindingCount(result); const packageSpecific=packageFindingCount(result); return { reviewCount:rows.review.length+rows.custom.length+formatSpecific+packageSpecific, metadataCount:rows.review.length, customCount:rows.custom.length, formatSpecific, packageSpecific };
       }
+      // Explicit allowlist: never serialize inspection objects or document-derived strings.
+      function inspectionReportSnapshot(result) {
+        const pkg = result.package;
+        const completeness = !pkg || !Array.isArray(pkg.partialFailures) ? 'unknown' : pkg.partialFailures.length ? 'partial' : 'complete';
+        const rows = buildResultRows(result);
+        const d = result.file.format === 'docx' ? result.docx : result.file.format === 'xlsx' ? result.xlsx : result.pptx;
+        const length = items => Array.isArray(items) ? items.length : null;
+        const sum = items => Array.isArray(items) && items.every(item => Number.isSafeInteger(item.count) && item.count >= 0) ? items.reduce((total, item) => total + item.count, 0) : null;
+        const categoryCounts = {
+          metadata: rows.review.length, documentProperties: rows.documentInfo.length, customProperties: rows.custom.length,
+          comments: length(d?.comments), trackedChanges: length(d?.revisions), hiddenText: length(d?.hiddenText),
+          editingSessions: Number.isSafeInteger(d?.rsidCount) && d.rsidCount >= 0 ? d.rsidCount : null,
+          hiddenSheets: length(d?.hiddenSheets), hiddenRows: sum(d?.hiddenRows), hiddenColumns: sum(d?.hiddenColumns),
+          externalRelationships: length(d?.externalRelationships), externalFormulas: length(d?.externalFormulas),
+          definedNames: length(d?.definedNames), connections: length(d?.connections), pivotCaches: length(d?.pivotCaches), slicerCaches: length(d?.slicerCaches),
+          speakerNotes: length(d?.notes), hiddenSlides: length(d?.hiddenSlides), offSlideObjects: length(d?.offSlideObjects),
+          embeddedObjects: length(d?.embeddedObjects), customXml: length(d?.customXml),
+          signatureCautions: pkg ? (pkg.signed ? 1 : 0) : null, macroCautions: pkg ? ((pkg.macroEnabled || pkg.macroParts?.length) ? Math.max(1, pkg.macroParts?.length || 0) : 0) : null,
+          duplicateRelationships: length(pkg?.duplicateRelationships)
+        };
+        // A partial parser result may contain empty arrays for unreadable parts. Those are not zero findings.
+        if (completeness !== 'complete') Object.keys(categoryCounts).forEach(key => { categoryCounts[key] = null; });
+        const restrictions = new Set();
+        for (const reason of pkg?.cleanupBlockedReasons || []) restrictions.add(['signature', 'macro', 'relationships', 'partial'].includes(reason) ? reason : 'other');
+        if (completeness !== 'complete') restrictions.add('partial');
+        if (pkg?.signed) restrictions.add('signature');
+        if (pkg?.macroEnabled || pkg?.macroParts?.length) restrictions.add('macro');
+        if (pkg?.duplicateRelationships?.length) restrictions.add('relationships');
+        return { completeness, categoryCounts, cleanupRestrictions: [...restrictions].sort() };
+      }
+      function createInspectionReport(before, after = null, cleanupStatus = 'not_performed') {
+        if (!before || !['docx', 'xlsx', 'pptx'].includes(before.file?.format)) return null;
+        const status = ['verified', 'reinspection_failed'].includes(cleanupStatus) ? cleanupStatus : 'not_performed';
+        const verifiedAfter = status === 'verified' && after?.file?.format === before.file.format && after.package?.partialFailures?.length === 0;
+        return {
+          schemaVersion: 1, appVersion: APP_CONFIG.version, format: before.file.format,
+          caveat: 'Counts cover supported checks only. Null means unknown or not applicable. Zero findings do not mean the file is safe or anonymous. Review document content separately.',
+          inspection: inspectionReportSnapshot(before),
+          cleanup: { status: status === 'verified' && !verifiedAfter ? 'reinspection_failed' : status, after: verifiedAfter ? inspectionReportSnapshot(after) : null }
+        };
+      }
+      function resetInspectionReport() {
+        reportReadyGeneration = -1;
+        $('#downloadReportButton').disabled = true;
+        $('#reportFilenameInput').value = 'inspection-summary';
+        $('#reportSaveStatus').textContent = '';
+      }
+      function syncInspectionReport() {
+        $('#downloadReportButton').disabled = !currentResult || reportReadyGeneration !== sourceGeneration || cleanupBusy;
+      }
+      function reportFilename() {
+        const entered = String($('#reportFilenameInput').value || '').trim().replace(/(?:\.json)+$/i, '');
+        let stem = sanitizeOutputStem(entered || 'inspection-summary');
+        if (stem === 'office-file-cleaned') stem = 'inspection-summary';
+        if (/^(con|prn|aux|nul|com[1-9]|lpt[1-9])(?:\.|$)/i.test(stem)) stem = `_${stem}`;
+        return `${stem}.json`;
+      }
+      function downloadInspectionReport() {
+        if (!currentResult || reportReadyGeneration !== sourceGeneration || cleanupBusy) return;
+        let url = '';
+        try {
+          const status = cleanupReinspectionError || cleanupVerificationFailed ? 'reinspection_failed' : cleanupAfterResult ? 'verified' : 'not_performed';
+          const report = createInspectionReport(currentResult, cleanupAfterResult, status);
+          if (!report) return;
+          const filename = reportFilename(); $('#reportFilenameInput').value = filename.slice(0, -5);
+          url = URL.createObjectURL(new Blob([`${JSON.stringify(report, null, 2)}\n`], { type: 'application/json;charset=utf-8' }));
+          const anchor = document.createElement('a'); anchor.href = url; anchor.download = filename; document.body.append(anchor);
+          try { anchor.click(); } finally { anchor.remove(); }
+          $('#reportSaveStatus').textContent = translate('reportSaved');
+        } catch { $('#reportSaveStatus').textContent = translate('reportFailed'); }
+        finally { if (url) { const downloadUrl = url; setTimeout(() => URL.revokeObjectURL(downloadUrl), 1000); } }
+      }
       function remainingFindingItems(result) {
         const rows=buildResultRows(result); const items=[];
         if (rows.review.length) items.push({label:translate('cleanupRemainingMetadata'),count:rows.review.length});
@@ -1611,24 +1702,26 @@
       }
 
       async function createCleanedCopy() {
-        if (!currentFile || !currentResult) return; if (currentResult.package?.cleanupBlockedReasons?.length) { AppToast.show({message:translate('cleanupBlockedGeneric'),tone:'warning'}); return; } const targets=selectedCleanupTargets(); if (!targets.length) { AppToast.show({message:translate('cleanupNothingSelected'),tone:'warning'}); return; }
+        if (!currentFile || !currentResult || cleanupBusy) return; const generation = sourceGeneration; if (currentResult.package?.cleanupBlockedReasons?.length) { AppToast.show({message:translate('cleanupBlockedGeneric'),tone:'warning'}); return; } const targets=selectedCleanupTargets(); if (!targets.length) { AppToast.show({message:translate('cleanupNothingSelected'),tone:'warning'}); return; }
         const hasComments=targets.includes('docx:comments') || targets.includes('pptx:comments'); const hasAllNotes=targets.includes('pptx:notes:all');
-        if (hasComments || hasAllNotes) { const body=hasComments && hasAllNotes ? translate('cleanupConfirmMixedBody') : hasComments ? translate('cleanupConfirmCommentsBody') : translate('cleanupConfirmNotesBody'); const approved=await AppConfirm.ask({title:translate('cleanupConfirmTitle'),message:body,confirmLabel:translate('cleanupConfirmAction'),cancelLabel:translate('cancel'),tone:'danger'}); if (!approved) return; }
-        const button=$('#createCleanedButton'); button.disabled=true; const originalText=button.textContent; button.textContent=translate('cleanupWorking'); syncQuickCleanupActions(); const generation=sourceGeneration;
+        if (hasComments || hasAllNotes) { const body=hasComments && hasAllNotes ? translate('cleanupConfirmMixedBody') : hasComments ? translate('cleanupConfirmCommentsBody') : translate('cleanupConfirmNotesBody'); const approved=await AppConfirm.ask({title:translate('cleanupConfirmTitle'),message:body,confirmLabel:translate('cleanupConfirmAction'),cancelLabel:translate('cancel'),tone:'danger'}); if (!approved || generation !== sourceGeneration) return; }
+        cleanupBusy = true; syncInspectionReport();
+        const button=$('#createCleanedButton'); button.disabled=true; button.textContent=translate('cleanupWorking'); syncQuickCleanupActions();
         try {
           releaseCleanupOutput(); cleanupSelectedTargetsSnapshot=targets.slice();
           const bytes=await buildCleanedOfficeBytes(currentFile,currentResult,targets,generation); if (generation!==sourceGeneration) return;
           cleanupFilename=outputFilename(currentFile.name); cleanupBlob=new Blob([bytes],{type:currentFile.type || 'application/octet-stream'}); cleanupBlobUrl=URL.createObjectURL(cleanupBlob);
           try {
             const cleanedFile=new File([bytes],cleanupFilename,{type:currentFile.type || 'application/octet-stream',lastModified:Date.now()});
-            cleanupAfterResult=await inspectOfficeFile(cleanedFile,generation,false); if (generation!==sourceGeneration) return; validateCleanupReinspection(currentResult,cleanupAfterResult,targets); cleanupReinspectionError=null;
+            const afterResult=await inspectOfficeFile(cleanedFile,generation,false); if (generation!==sourceGeneration) return; validateCleanupReinspection(currentResult,afterResult,targets); cleanupAfterResult=afterResult; cleanupReinspectionError=null;
           } catch(error) {
-            if (error?.code==='stale' || error?.code==='cleanupVerification') throw error; cleanupAfterResult=null; cleanupReinspectionError=error; console.error('Post-cleanup reinspection failed',error);
+            if (generation!==sourceGeneration || error?.code==='stale') throw new AppError('stale'); if (error?.code==='cleanupVerification') throw error; cleanupAfterResult=null; cleanupReinspectionError=error; console.error('Post-cleanup reinspection failed',error);
           }
+          if (generation!==sourceGeneration) return;
           renderCleanupCompletion(); scrollToCleanupCompletion(); AppToast.show({message:translate('cleanupCreatedToast'),tone:cleanupReinspectionError?'warning':'success'}); announce(cleanupReinspectionError ? translate('cleanupPartialTitle') : translate('cleanupCreatedToast'));
         }
-        catch(error) { if (error?.code !== 'stale') { releaseCleanupOutput(); AppToast.show({message:translate('cleanupFailed'),tone:'warning'}); console.error(error); } }
-        finally { button.textContent=originalText; updateCleanupSelection(false); }
+        catch(error) { if (generation===sourceGeneration && error?.code !== 'stale') { releaseCleanupOutput(); cleanupVerificationFailed=error?.code==='cleanupVerification'; AppToast.show({message:translate('cleanupFailed'),tone:'warning'}); console.error(error); } }
+        finally { if (generation===sourceGeneration) { cleanupBusy=false; button.textContent=translate('createCleaned'); updateCleanupSelection(false); syncInspectionReport(); } }
       }
       function downloadCleanedCopy() {
         if (!cleanupBlobUrl || !cleanupBlob || !cleanupFilename) return; const filename=editedCleanupFilename(); cleanupFilename=filename; const filenamePartsValue=filenameParts(filename); $('#cleanupFilenameInput').value=filenamePartsValue.stem; $('#cleanupFilenameExtension').textContent=filenamePartsValue.extension; const anchor=document.createElement('a'); anchor.href=cleanupBlobUrl; anchor.download=filename; document.body.append(anchor); anchor.click(); anchor.remove(); const message=formatTemplate(translate('cleanupSaveStarted'),{name:filename}); $('#cleanupSaveStatus').textContent=message; AppToast.show({message,tone:'success'}); announce(message);
@@ -1920,9 +2013,13 @@
         $('#entryCount').textContent = formatNumber(result.package.entryCount); $('#detectedFormat').textContent = extensionLabel; $('#compressionInfo').textContent = translate('nativeZip'); $('#inspectionStatus').textContent=translate(result.package.partialFailures?.length ? 'inspectionPartial' : 'inspectionComplete'); const failures=result.package.partialFailures || []; $('#inspectionFailureDetailsWrap').hidden=!failures.length; $('#inspectionFailureDetails').textContent=failures.map(item=>`${item.part}: ${item.message}`).join('\n');
         renderCleanup(result,{preserveOutput:Boolean(options.preserveCleanupOutput),selection:options.cleanupSelection});
         if (options.preserveCleanupOutput && cleanupBlob) renderCleanupCompletion();
+        syncInspectionReport();
       }
       function setProgress(percent, phaseKey) { const value = Math.max(0, Math.min(100, percent)); $('#progressBar').style.width = `${value}%`; $('#loadingPercent').textContent = `${Math.round(value)}%`; $('#loadingPhase').textContent = translate(phaseKey); }
       function showOnly(state) {
+        $('#reportSection').hidden = state !== 'result';
+        reportReadyGeneration = state === 'result' && currentResult ? sourceGeneration : -1;
+        syncInspectionReport();
         $('#emptyState').hidden = state !== 'empty'; $('#loadingState').hidden = state !== 'loading'; $('#resultState').hidden = state !== 'result'; $('#packageSection').hidden = state !== 'result' || !currentResult || packageFindingCount(currentResult)===0; $('#reviewSection').hidden = state !== 'result'; $('#documentSection').hidden = state !== 'result'; $('#customSection').hidden = state !== 'result'; $('#docxSection').hidden = state !== 'result' || currentResult?.file?.format !== 'docx'; $('#xlsxSection').hidden = state !== 'result' || currentResult?.file?.format !== 'xlsx'; $('#pptxSection').hidden = state !== 'result' || currentResult?.file?.format !== 'pptx'; $('#cleanupSection').hidden = state !== 'result'; $('#technicalSection').hidden = state !== 'result'; $('#errorState').hidden = state !== 'error'; document.body.classList.toggle('result-active', state === 'result'); $('#mobileResultActions').hidden = state !== 'result'; if (state === 'result') syncQuickCleanupActions();
       }
       function renderError(code, details = '') {
@@ -1932,7 +2029,7 @@
       }
       async function inspectSelectedFile(file) {
         if (!file) return;
-        cancelActiveRead(); releaseCleanupOutput(); AppToast.dismiss();
+        cancelActiveRead(); releaseCleanupOutput(); resetInspectionReport(); cleanupBusy = false; AppToast.dismiss();
         currentFile = file; currentResult = null; const generation = ++sourceGeneration; showOnly('loading'); setProgress(2, 'loadingRead'); announce(translate('loadingTitle'));
         try {
           const result = await inspectOfficeFile(file, generation); if (generation !== sourceGeneration) return; currentResult = result; renderResult(result); showOnly('result'); AppToast.show({ message: translate('loadedToast'), tone: 'success' }); announce(translate('loadedToast'));
@@ -1947,7 +2044,7 @@
           const approved = await AppConfirm.ask({ title: translate('resetConfirmTitle'), message: translate('resetConfirmBody'), confirmLabel: translate('resetConfirmAction'), cancelLabel: translate('cancel'), tone: 'danger' });
           if (!approved) return;
         }
-        ++sourceGeneration; cancelActiveRead(); releaseCleanupOutput(); currentFile = null; currentResult = null; $('#fileInput').value = ''; $('#errorState').dataset.errorCode = ''; setProgress(0, 'loadingRead'); showOnly('empty'); AppToast.show({ message: translate('resetToast') }); announce(translate('resetToast')); $('#pickFileButton').focus({ preventScroll: true });
+        ++sourceGeneration; cancelActiveRead(); releaseCleanupOutput(); resetInspectionReport(); cleanupBusy = false; currentFile = null; currentResult = null; $('#fileInput').value = ''; $('#errorState').dataset.errorCode = ''; setProgress(0, 'loadingRead'); showOnly('empty'); AppToast.show({ message: translate('resetToast') }); announce(translate('resetToast')); $('#pickFileButton').focus({ preventScroll: true });
       }
       function openPicker() { const input = $('#fileInput'); input.value = ''; input.click(); }
       function handleFiles(files) { const file = files?.[0]; if (file) inspectSelectedFile(file); }
@@ -1961,6 +2058,7 @@
       $('#jumpToFindingsButton').addEventListener('click', scrollToFindings);
       $('#mobileFindingsButton').addEventListener('click', scrollToFindings);
       $('#downloadCleanedButton').addEventListener('click', downloadCleanedCopy);
+      $('#downloadReportButton').addEventListener('click', downloadInspectionReport);
       const dropZone = $('#dropZone');
       ['dragenter','dragover'].forEach(type => dropZone.addEventListener(type, event => { event.preventDefault(); event.stopPropagation(); dropZone.classList.add('is-dragover'); }));
       ['dragleave','drop'].forEach(type => dropZone.addEventListener(type, event => { event.preventDefault(); event.stopPropagation(); dropZone.classList.remove('is-dragover'); }));
