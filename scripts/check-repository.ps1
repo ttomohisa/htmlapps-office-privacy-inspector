@@ -229,6 +229,11 @@ if ([string]::IsNullOrWhiteSpace([string]$app.name)) { throw "app.config.json: n
 if ([string]::IsNullOrWhiteSpace([string]$app.slug)) { throw "app.config.json: slug is required" }
 if ([string]::IsNullOrWhiteSpace([string]$app.version)) { throw "app.config.json: version is required" }
 
+# Check the public root release before the build can regenerate it.
+$nodeCommand = Get-Command node -ErrorAction Stop
+& $nodeCommand.Source --test (Join-Path $Root "tests/release-parity.test.cjs")
+if ($LASTEXITCODE -ne 0) { throw "Public root release parity regressions failed." }
+
 $buildArguments = @{}
 if ($ForceDownload) { $buildArguments.ForceDownload = $true }
 & (Join-Path $Root "build-standalone.ps1") @buildArguments

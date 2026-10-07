@@ -18,6 +18,8 @@ GitHub Pagesから最初のHTMLを読み込んだ後、Officeファイルの読�
 
 [![Office Privacy Inspector スクリーンショット](assets/screenshot.png)](https://ttomohisa.github.io/htmlapps-office-privacy-inspector/)
 
+ヘッダーのENで英語、JAで日本語に切り替えます。バージョンは `vMAJOR.MINOR.PATCH` 形式、プライバシーバッジは「完全ローカル処理」/「Fully local processing」と表示します。
+
 ## Features
 
 - **Officeの基本メタデータを確認** — 作成者、最終更新者、会社名、管理者名、総編集時間、Custom Propertiesなどを表示します。
@@ -39,7 +41,7 @@ GitHub Pagesから最初のHTMLを読み込んだ後、Officeファイルの読�
 
 ### 単一HTMLを使う
 
-1. このリポジトリまたはビルド成果物から `dist/index.html` を取得します。
+1. ルートの [`office-privacy-inspector.html`](office-privacy-inspector.html)、またはビルド成果物の `dist/index.html` を取得します。
 2. 現行のChrome / Edgeで開きます。
 3. DOCX / XLSX / PPTXを選択するか、画面へドロップします。
 
@@ -171,7 +173,9 @@ build-standalone.bat
 
 ビルドではfavicon / 左上アイコンの埋め込み、単一HTML検証、未解決placeholder確認、self-extract版、各manifestを生成します。
 
-`dist/index.html` は直接編集せず、`src/index.template.html` を変更して再ビルドします。
+通常ビルドは公開用のルート `office-privacy-inspector.html` も更新し、`dist/index.html` とバイト単位で一致させます。`-OutputPath` を明示した場合は独立した出力を作成し、ルート配布版を変更しません。
+
+生成済みHTMLは直接編集せず、`src/index.template.html` を変更して再ビルドします。`scripts/check-repository.ps1` はNode.js 24以降を使い、再ビルド前にルート配布版とソース・アプリ設定の一致を検査します。全テストはソース・dist版・ルート配布版で実行します。
 
 ## Privacy
 

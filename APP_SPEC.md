@@ -2078,3 +2078,11 @@ Officeファイルは外部サーバーへ送信せず、ブラウザ内で処�
 
 - Treat a missing required `word/document.xml` as a partial DOCX inspection and block cleanup. Keep reporting failed cleanup verification as `reinspection_failed` after discarding unsafe output; late failures cannot change a newer source or its successful cleanup.
 - Completeness is scoped to implemented checks, not full OOXML structural validation. Existing missing referenced worksheet/slide-target coverage is not expanded by this change.
+
+
+## v1.1.1 — Header consistency
+
+- Show EN as the language-switch target in Japanese and JA in English. Keep the localized action-target aria-label and matching title synchronized on initial load, repeated toggles, and saved-language reload.
+- Display the current app version as `vMAJOR.MINOR.PATCH`, including the static startup fallback.
+- Preserve the existing responsive layout and the privacy badge text 完全ローカル処理 / Fully local processing.
+- The default canonical build must refresh the public `office-privacy-inspector.html` entry point with byte-identical readable dist output. Explicit `-OutputPath` builds leave that root release unchanged. Check root/source/config parity before a repository-check rebuild, and exercise the actual root release in regression tests.

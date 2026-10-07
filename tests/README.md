@@ -104,6 +104,10 @@ Run with Node.js 24+: `npm ci --prefix tests --ignore-scripts --no-audit --no-fu
 
 Coverage includes counts-only JSON and distinctive private strings, edited generic filenames, reset/replacement/error/cleanup state, signature/macro/partial protection fixtures, duplicate ZIP names and separator collisions, stored/deflate/ZIP64/encrypted controls, and unchanged unrelated ZIP local records and bytes after cleanup. Existing combined XLSX/PPTX fixtures intentionally contain macro parts and remain cleanup-blocked.
 
-Set `OFFICE_TEST_HTML` to an absolute generated HTML path to repeat the suite against a release. CI tests source and the canonical readable build. Both generated variants must also pass the canonical PowerShell checks. Real browser file downloads, narrow layouts, keyboard behavior, file:// loading, runtime network observation, and opening cleaned copies in Word/Excel/PowerPoint remain separate manual checks.
+Set `OFFICE_TEST_HTML` to an absolute generated HTML path to repeat the suite against a release. CI tests source, the canonical readable build, and the public root-level `office-privacy-inspector.html`. Both generated variants must also pass the canonical PowerShell checks. Real browser file downloads, narrow layouts, keyboard behavior, file:// loading, runtime network observation, and opening cleaned copies in Word/Excel/PowerPoint remain separate manual checks.
 
 Review regressions additionally exercise the actual failed-verification catch path, delayed ordinary reinspection failures before and after a replacement's successful cleanup, cleanup label reset, and a missing required Word document part.
+
+Header regressions exercise the actual app startup and language click handler with Japanese/English browser languages, repeated toggles, saved-language reload, and unavailable storage. They assert EN / JA targets, localized matching aria-label/title, the configured v-prefixed version, unchanged privacy text, and the Japanese static fallback.
+
+`release-parity.test.cjs` compares the complete root HTML with source after normalizing only generated build values and the canonical embedded icon, and checks its embedded app configuration. The repository check runs these tests before rebuilding, so a stale committed root cannot be silently repaired by CI.

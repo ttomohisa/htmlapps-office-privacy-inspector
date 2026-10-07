@@ -1,11 +1,17 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { JSDOM } = require('jsdom');
-function app() {
+function app({ language = 'en-US', savedLanguage = null, storageUnavailable = false } = {}) {
   const source = fs.readFileSync(process.env.OFFICE_TEST_HTML || path.join(__dirname, '../src/index.template.html'), 'utf8');
   const config = JSON.parse(fs.readFileSync(path.join(__dirname, '../app.config.json')));
   const dom = new JSDOM(source.replace(/<script>[\s\S]*?<\/script>/g, ''), { url: 'https://test.invalid', runScripts: 'outside-only' });
-  const w = dom.window; const blobs = new Map(); const downloads = []; const revoked = [];
+  const w = dom.window;
+  Object.defineProperty(w.navigator, 'language', { value: language });
+  if (savedLanguage) w.localStorage.setItem(`${config.slug}:language`, savedLanguage);
+  if (storageUnavailable) {
+    w.Storage.prototype.getItem = w.Storage.prototype.setItem = () => { throw new Error('Storage unavailable'); };
+  }
+  const blobs = new Map(); const downloads = []; const revoked = [];
   Object.assign(w, { TextEncoder, TextDecoder, Uint8Array, Uint32Array, DataView, Blob, File, Response, CompressionStream, DecompressionStream });
   w.requestAnimationFrame = callback => callback();
   w.HTMLElement.prototype.scrollIntoView = () => {};
