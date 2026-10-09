@@ -2086,3 +2086,9 @@ Officeファイルは外部サーバーへ送信せず、ブラウザ内で処�
 - Display the current app version as `vMAJOR.MINOR.PATCH`, including the static startup fallback.
 - Preserve the existing responsive layout and the privacy badge text 完全ローカル処理 / Fully local processing.
 - The default canonical build must refresh the public `office-privacy-inspector.html` entry point with byte-identical readable dist output. Explicit `-OutputPath` builds leave that root release unchanged. Check root/source/config parity before a repository-check rebuild, and exercise the actual root release in regression tests.
+
+## v1.1.2 icon consistency
+
+- The canonical icon background and matching green details use `#16624f`.
+- Background corner radii are exactly 25% of their corresponding width and height; existing bounds, padding, and foreground artwork are preserved.
+- Header, favicon, and self-extract loader inherit the canonical `assets/favicon.svg`.
