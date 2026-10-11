@@ -72,11 +72,11 @@ test('working Help header/body split and short-viewport bounds stay intact', t =
 });
 
 for (const language of ['ja-JP', 'en-US']) {
-  test(`${language} Help explains dialog scrolling and cancellation`, t => {
+  test(`${language} Help explains closing and cancellation`, t => {
     const a = app({ language }); t.after(a.close);
     const note = a.w.document.querySelector('[data-i18n="helpDialogs"]');
-    assert.ok(note, 'Help must explain the bounded dialog body');
-    assert.match(note.textContent, language === 'ja-JP' ? /画面が低いとき/ : /short screen/i);
+    assert.ok(note, 'Help must explain dismissal and cancellation');
+    assert.doesNotMatch(note.textContent, language === 'ja-JP' ? /画面が低いとき/ : /short screen/i);
     assert.match(note.textContent, language === 'ja-JP' ? /キャンセル/ : /cancel/i);
   });
 
