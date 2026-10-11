@@ -111,3 +111,11 @@ Review regressions additionally exercise the actual failed-verification catch pa
 Header regressions exercise the actual app startup and language click handler with Japanese/English browser languages, repeated toggles, saved-language reload, and unavailable storage. They assert EN / JA targets, localized matching aria-label/title, the configured v-prefixed version, unchanged privacy text, and the Japanese static fallback.
 
 `release-parity.test.cjs` compares the complete root HTML with source after normalizing only generated build values and the canonical embedded icon, and checks its embedded app configuration. The repository check runs these tests before rebuilding, so a stale committed root cannot be silently repaired by CI.
+
+## v1.1.3 dialog layout regressions
+
+`dialog-layout.test.cjs` checks the root/body open-dialog scroll-lock rule, the existing bounded confirmation body with its unchanged nested actions, Help layout preservation, bilingual Help guidance, shared `AppConfirm` dismissal/approval/reopen/focus-return handlers, and loaded Reset cancellation/approval. These use jsdom and CSS contracts, not a rendered viewport or a native focus trap. Existing Office fixture, report privacy, ZIP safety, release parity, header, and icon tests remain required.
+
+The canonical repository check requires this test and runs all `.test.cjs` and `.test.mjs` files against the source, generated readable HTML, and public root alias. Install the pinned test-only dependencies first (`npm ci --prefix tests --ignore-scripts --no-audit --no-fund`). `npm --prefix tests test` also discovers the new CJS tests; the separate icon MJS test remains included by the canonical checker.
+
+Native browser verification must separately exercise Japanese/English Help and loaded Reset at desktop and 393 × 252, final-note/action reachability through the dialog body, background-wheel isolation, Close/Cancel/Esc/backdrop/reopen, keyboard focus, and unchanged file/report outputs. Do not infer other cleanup branches from the shared-dialog tests.

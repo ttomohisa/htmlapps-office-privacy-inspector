@@ -25,6 +25,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
 
+      - name: Setup Node.js for regression tests
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+
+      - name: Install pinned test-only dependencies
+        run: npm ci --prefix tests --ignore-scripts --no-audit --no-fund
+
       - name: Validate PowerShell syntax and encoding
         shell: powershell
         run: .\scripts\check-powershell-syntax.ps1

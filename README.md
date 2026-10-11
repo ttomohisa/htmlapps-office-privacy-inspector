@@ -20,6 +20,8 @@ GitHub Pages serves the initial HTML. File reading, OOXML inspection, cleanup, a
 
 The header uses EN to switch to English and JA to switch to Japanese. It shows the app version as `vMAJOR.MINOR.PATCH`; the privacy badge reads “Fully local processing” / “完全ローカル処理”.
 
+Help and confirmation dialogs pause background scrolling. On short screens, scroll inside the dialog body to reach the final notes or confirmation buttons while the header stays visible. Close, Esc, or a backdrop click dismisses the dialog; Cancel does not apply the pending action.
+
 ## Features
 
 - **Inspect common Office metadata** — Review Creator, Last Modified By, Company, Manager, editing time, Custom Properties, and other Core / Extended Properties.

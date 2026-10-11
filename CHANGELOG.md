@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.1.3] - 2026-10-11
+
+### Fixed
+- Lock document-root and body scrolling while Help or a confirmation dialog is open.
+- Keep the confirmation header visible and its existing message/actions body scrollable in short viewports, preserving safe-area padding and all confirmation behavior.
+- Preserve the working Help layout, Office parsing/cleanup/report logic, and canonical shield icon.
+- Add dialog layout contracts, Japanese/English confirmation and reset regressions, and canonical source/readable/root suite wiring.
+
+### 修正
+- ヘルプ・確認画面の表示中は背景をスクロールさせず、低い画面でも確認画面の本文内をスクロールしてボタンまで進めるようにしました。
+- 既存のヘルプ表示、キャンセル・確認操作、Officeの検査・クリーンアップ・サマリー出力は維持しています。
+
 ## [1.1.2] - 2026-10-09
 
 ### Fixed
