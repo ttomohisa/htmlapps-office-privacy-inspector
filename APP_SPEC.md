@@ -2092,3 +2092,15 @@ Officeファイルは外部サーバーへ送信せず、ブラウザ内で処�
 - The canonical icon background and matching green details use `#16624f`.
 - Background corner radii are exactly 25% of their corresponding width and height; existing bounds, padding, and foreground artwork are preserved.
 - Header, favicon, and self-extract loader inherit the canonical `assets/favicon.svg`.
+
+## v1.1.3 — Bounded dialog scrolling / ダイアログの見切れ対策
+
+- While Help or the shared confirmation dialog is open, lock both document-root and body scrolling. Closing the last dialog releases the lock through its native `open` state.
+- Preserve Help's working fixed header, bounded body, short-viewport size, and final-note safe-area padding.
+- Keep confirmation markup and handlers unchanged. Its header must not shrink; its existing message-and-actions body must shrink and scroll within the dialog's existing desktop/mobile height limit, including bottom safe-area padding. All existing Close, Cancel, Esc, backdrop, approval, and focus-return behavior remains unchanged.
+- At 393 × 252 and desktop viewports, verify the final Help note and both confirmation buttons are reachable without scrolling the background. Test Japanese and English, loaded Reset cancellation and approval, repeated open/close, keyboard navigation, and pointer backdrop dismissal.
+- Shared cleanup confirmations retain their current behavior. A layout or direct `AppConfirm` test is not evidence that every comments/notes cleanup branch has been exercised in a native browser.
+- Preserve Office read/rewrite, ZIP/OOXML inspection, counts-only report privacy, source-generation guards, cleanup restrictions, and canonical icon exactly.
+- Canonical checks run the complete Node suite on the source, readable build, and public root entry point. Actual geometry, wheel scrolling, native focus trapping, and offline checks require separate browser verification.
+
+ヘルプと確認画面を開いている間は背景のスクロールを停止します。確認画面は既存のヘッダーと本文・ボタン構成を保ち、低い画面では本文内をスクロールして末尾のボタンまで進めるようにします。ヘルプの既存のサイズ制限、閉じる・キャンセル・Esc・背景クリック、検査とクリーンアップの意味は変えません。

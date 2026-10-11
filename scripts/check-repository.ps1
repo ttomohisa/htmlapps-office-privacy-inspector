@@ -29,6 +29,7 @@ $required = @(
   "docs\WEBRTC_QR_PAIRING.ja.md",
   "examples\dependencies.webrtc-qr.json",
   "src\index.template.html",
+  "tests\dialog-layout.test.cjs",
   "build-standalone.ps1",
   "scripts\build-self-extract.ps1",
   "scripts\check-powershell-syntax.ps1",
@@ -237,6 +238,21 @@ if ($LASTEXITCODE -ne 0) { throw "Public root release parity regressions failed.
 $buildArguments = @{}
 if ($ForceDownload) { $buildArguments.ForceDownload = $true }
 & (Join-Path $Root "build-standalone.ps1") @buildArguments
+
+# Run the complete source suite and repeat it on both readable release entry points.
+# The native browser checks remain necessary for actual viewport and wheel behavior.
+$testFiles = @((Get-ChildItem -Path (Join-Path $Root "tests/*.test.cjs")).FullName) + @((Get-ChildItem -Path (Join-Path $Root "tests/*.test.mjs")).FullName)
+$previousOfficeTestHtml = $env:OFFICE_TEST_HTML
+try {
+  foreach ($relativeHtml in @("src/index.template.html", "dist/index.html", "office-privacy-inspector.html")) {
+    $htmlPath = Join-Path $Root $relativeHtml
+    $env:OFFICE_TEST_HTML = $htmlPath
+    & $nodeCommand.Source --test $testFiles
+    if ($LASTEXITCODE -ne 0) { throw "Office regression tests failed for $relativeHtml." }
+  }
+} finally {
+  $env:OFFICE_TEST_HTML = $previousOfficeTestHtml
+}
 
 Write-Host "[OK] Repository check passed." -ForegroundColor Green
 

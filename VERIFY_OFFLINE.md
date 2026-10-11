@@ -32,3 +32,13 @@ The starter does not enable WebRTC by default. If the application copies `compon
 
 `connect-src 'none'` remains expected. The direct WebRTC DataChannel is intentional peer-to-peer application traffic, not a hidden runtime dependency.
 
+## v1.1.3 dialog checks / ダイアログ確認
+
+On both readable entry points and the restored self-extracting app, use Japanese and English at desktop size and a 393 × 252 short viewport:
+
+1. Open Help and wheel outside the dialog. The page must stay in place; scroll its body to the final note while the header remains visible.
+2. Load a synthetic Office fixture and open Reset. Scroll inside the confirmation body until both Cancel and Reset are reachable. Outside wheel input must not move the background.
+3. Cancel, Close, Esc, and backdrop dismissal preserve the loaded inspection. Confirmed Reset clears it. Repeat opening/closing, check keyboard focus and Tab/Shift+Tab behavior, then verify the normal page can scroll again.
+4. Repeat local metadata cleanup and counts-only JSON export, checking edited filenames and output contents. Shared dialog layout checks do not substitute for individual cleanup-branch verification.
+
+ヘルプの末尾と確認ボタンへ本文内のスクロールで進めること、背景が動かないこと、閉じた後の通常スクロール、日英・キーボード・キャンセルと確定の動作を実際のブラウザーで確認します。
