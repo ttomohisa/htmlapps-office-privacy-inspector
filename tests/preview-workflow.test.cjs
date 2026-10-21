@@ -10,12 +10,12 @@ const standalone = read('.github/workflows/build-standalone.yml');
 const installCommand = 'npm ci --prefix tests --ignore-scripts --no-audit --no-fund';
 
 function steps(workflow) {
-  return workflow.split(/(?=^      - name: )/m).slice(1).map(step => step.trimEnd());
+  return workflow.split(/(?=^[ ]+- name: )/m).slice(1).map(step => { const indent = step.match(/^ */)[0].length; return step.split('\n').map(line => line.slice(indent)).join('\n').trimEnd(); });
 }
 
 test('preview installs the pinned test package after Node setup and before repository verification', () => {
   const previewSteps = steps(preview);
-  const expectedInstall = '      - name: Install pinned test-only dependencies\n        run: ' + installCommand;
+  const expectedInstall = '- name: Install pinned test-only dependencies\n  run: ' + installCommand;
   assert.equal(previewSteps.filter(step => step === expectedInstall).length, 1,
     'Preview must install pinned test-only dependencies unconditionally before running jsdom regressions');
   assert.ok(steps(standalone).includes(expectedInstall), 'Preview and standalone use the same safe install step');
@@ -25,25 +25,25 @@ test('preview installs the pinned test package after Node setup and before repos
     'Install pinned test-only dependencies',
     'Validate PowerShell syntax and encoding',
     'Build and verify standalone HTML',
-    'Check Cloudflare preview credentials'
-  ].map(name => previewSteps.findIndex(step => step.startsWith('      - name: ' + name + '\n')));
+    'Upload static preview site'
+  ].map(name => previewSteps.findIndex(step => step.startsWith('- name: ' + name + '\n')));
   for (let index = 0; index < ordered.length; index++) {
     assert.ok(ordered[index] >= 0, 'Required preview step is present');
-    if (index) assert.ok(ordered[index - 1] < ordered[index], 'Node, install, preflight, build, then credentials');
+    if (index) assert.ok(ordered[index - 1] < ordered[index], 'Node, install, preflight, build, then static artifact');
   }
-  assert.match(previewSteps[ordered[0]], /\n          node-version: 24(?:\n|$)/);
-  assert.match(previewSteps[ordered[3]], /\n        run: \.\/scripts\/check-repository\.ps1$/);
+  assert.match(previewSteps[ordered[0]], /\n    node-version: 24(?:\n|$)/);
+  assert.match(previewSteps[ordered[3]], /\n  run: \.\/scripts\/check-repository\.ps1$/);
 });
 
 test('preview keeps its same-repository PR gate and existing permission boundary', () => {
-  assert.match(preview, /^on:\n  pull_request:\n    branches:\n      - main\n/m);
+  assert.match(preview, /^[\'"]?on[\'"]?:\n  pull_request:\n    branches:\n\s+- main\n/m);
   assert.doesNotMatch(preview, /pull_request_target/);
   assert.equal(preview.match(/^permissions:\n(?:  [^\n]+\n)+/m)?.[0],
-    'permissions:\n  contents: read\n  pull-requests: write\n');
+    'permissions:\n  contents: read\n');
   assert.match(preview, /^    if: github\.event\.pull_request\.head\.repo\.full_name == github\.repository$/m);
-  const build = preview.indexOf('        run: ./scripts/check-repository.ps1');
+  const build = preview.indexOf('run: ./scripts/check-repository.ps1');
   assert.ok(build >= 0);
-  assert.doesNotMatch(preview.slice(0, build), /secrets\.|GH_TOKEN:|CLOUDFLARE_API_TOKEN:/,
+  assert.doesNotMatch(preview, /secrets\.|GH_TOKEN:|CLOUDFLARE_API_TOKEN:/,
     'Test installation and verification do not receive deployment credentials');
 });
 
