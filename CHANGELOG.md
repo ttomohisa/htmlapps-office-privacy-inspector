@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Hide the informational footer at 720px and below without hiding functional mobile controls; move existing build information to the quiet end of Help and preserve keyboard disclosure activation.
+
 - Clarify Japanese and English help by removing internal layout, implementation, and audit commentary while preserving usage guidance and cautions.
 
 ## [1.1.3] - 2026-10-11

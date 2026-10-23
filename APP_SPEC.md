@@ -2104,3 +2104,10 @@ Officeファイルは外部サーバーへ送信せず、ブラウザ内で処�
 - Canonical checks run the complete Node suite on the source, readable build, and public root entry point. Actual geometry, wheel scrolling, native focus trapping, and offline checks require separate browser verification.
 
 ヘルプと確認画面を開いている間は背景のスクロールを停止します。確認画面は既存のヘッダーと本文・ボタン構成を保ち、低い画面では本文内をスクロールして末尾のボタンまで進めるようにします。ヘルプの既存のサイズ制限、閉じる・キャンセル・Esc・背景クリック、検査とクリーンアップの意味は変えません。
+
+
+## Mobile informational layout
+
+- Hide only the informational page footer at the existing 720px phone breakpoint, including the empty/landing state; keep functional mobile controls and their reserved space unchanged.
+- Keep the existing build disclosure, IDs, values and localization as the quiet final item in Help. Header versions and the already canonical local-processing badge are unchanged.
+- Native disclosure keyboard activation must not dismiss Help; close button, Escape, genuine backdrop dismissal and internal scrolling remain available.

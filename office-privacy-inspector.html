@@ -229,6 +229,9 @@
     .error-box p { margin: 4px 0 0; color: var(--muted); font-size: 12px; }
     .error-actions { margin-top: 14px; display: flex; gap: 8px; flex-wrap: wrap; }
     .detail-error { margin-top: 12px; color: var(--muted); font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 11px; overflow-wrap: anywhere; }
+    #helpDialog .help-build { margin-top: 18px; color: var(--muted); font-size: 11px; }
+    #helpDialog .help-build summary { font-size: 11px; }
+    #helpDialog .help-build .tech-grid { grid-template-columns: 1fr; }
     footer { width: min(1080px, 100%); margin: 0 auto; padding: 0 clamp(14px, 2.8vw, 30px) 34px; color: var(--muted); font-size: 12px; }
     .app-toast { position: fixed; right: 18px; bottom: calc(18px + env(safe-area-inset-bottom)); z-index: 60; display: flex; align-items: center; gap: 12px; max-width: min(420px, calc(100vw - 36px)); padding: 10px 12px 10px 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); color: var(--text); box-shadow: var(--shadow-md); opacity: 0; transform: translateY(12px); pointer-events: none; transition: opacity .18s ease, transform .18s ease; }
     .app-toast.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
@@ -306,6 +309,7 @@
       .file-type-icon { width: 40px; height: 40px; }
       .header-button-row { margin-left: 0; }
     }
+    @media (max-width: 720px) { body > footer { display: none; } }
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
     }
@@ -555,16 +559,7 @@
     </section>
     <!-- APP:END -->
 
-    <section aria-label="Build information">
-      <details class="tech-details">
-        <summary data-i18n="buildInfo">ビルド情報</summary>
-        <div class="tech-grid">
-          <div class="tech-item"><span data-i18n="appVersion">アプリバージョン</span><strong id="buildVersion">—</strong></div>
-          <div class="tech-item"><span data-i18n="builtAt">生成日時</span><strong id="builtAt">—</strong></div>
-          <div class="tech-item"><span data-i18n="dependencies">内包依存数</span><strong id="dependencyCount">0</strong></div>
-        </div>
-      </details>
-    </section>
+
   </main>
 
   <div class="mobile-result-actions" id="mobileResultActions" hidden aria-label="Result actions">
@@ -629,6 +624,16 @@
       </ul>
       <p class="dialog-note" data-i18n="helpOffline">配布用の dist/index.html は単体で開ける構成です。</p>
       <!-- APP:HELP:END -->
+    <section class="help-build" aria-label="Build information">
+      <details class="tech-details">
+        <summary data-i18n="buildInfo">ビルド情報</summary>
+        <div class="tech-grid">
+          <div class="tech-item"><span data-i18n="appVersion">アプリバージョン</span><strong id="buildVersion">—</strong></div>
+          <div class="tech-item"><span data-i18n="builtAt">生成日時</span><strong id="builtAt">—</strong></div>
+          <div class="tech-item"><span data-i18n="dependencies">内包依存数</span><strong id="dependencyCount">0</strong></div>
+        </div>
+      </details>
+    </section>
     </div>
   </dialog>
 
@@ -637,7 +642,7 @@
       'use strict';
 
       const APP_CONFIG = {"$schema":"./schemas/app-config.schema.json","name":"Office Privacy Inspector","nameJa":"Office Privacy Inspector","slug":"office-privacy-inspector","version":"1.1.3","description":"Inspect privacy-related metadata and hidden information in Office Open XML files, surface actual findings clearly, offer accessible cleanup actions, and keep risky packages inspection-only in the browser.","descriptionJa":"Office Open XMLファイルのメタデータや非表示情報を確認し、見つかった内容を分かりやすく表示して、共有前の確認と安全なクリーンアップを迷わず進められるようにします。書き換えが安全でないファイルは検査のみに切り替えます。","defaultLanguage":"auto","repository":{"owner":"ttomohisa","name":"htmlapps-office-privacy-inspector"},"build":{"output":"dist/index.html","blockRuntimeNetwork":true,"selfExtract":{"enabled":true,"output":"dist/index.self-extract.html"},"sizeBudget":{"readableWarningMb":25,"selfExtractWarningMb":12}}};
-      const BUILD_MANIFEST = {"schemaVersion":2,"builder":"single-html-app-template/1.3","generatedAtUtc":"2026-10-11T22:21:34.4346892Z","app":{"name":"Office Privacy Inspector","slug":"office-privacy-inspector","version":"1.1.3"},"dependencies":[]};
+      const BUILD_MANIFEST = {"schemaVersion":2,"builder":"single-html-app-template/1.3","generatedAtUtc":"2026-10-23T12:08:14.0092207Z","app":{"name":"Office Privacy Inspector","slug":"office-privacy-inspector","version":"1.1.3"},"dependencies":[]};
       const assetBundle = {"schemaVersion":2,"dependencies":{}};
       const blobUrls = new Set();
       const assetByteCache = new Map();
@@ -2071,7 +2076,7 @@
       document.addEventListener('dragover', event => event.preventDefault()); document.addEventListener('drop', event => { if (!dropZone.contains(event.target)) event.preventDefault(); });
       $('#languageButton').addEventListener('click', () => { language = language === 'ja' ? 'en' : 'ja'; writeStorage(storageKeys.language, language); applyLanguage(); });
       window.addEventListener('pagehide', () => { cancelActiveRead(); releaseCleanupOutput(); });
-      const helpDialog = $('#helpDialog'); $('#helpButton').addEventListener('click', () => helpDialog.showModal()); $('#closeHelpButton').addEventListener('click', () => helpDialog.close()); helpDialog.addEventListener('click', event => { const rect = helpDialog.getBoundingClientRect(); if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) helpDialog.close(); });
+      const helpDialog = $('#helpDialog'); $('#helpButton').addEventListener('click', () => helpDialog.showModal()); $('#closeHelpButton').addEventListener('click', () => helpDialog.close()); helpDialog.addEventListener('click', event => { if (event.target !== helpDialog) return; const rect = helpDialog.getBoundingClientRect(); if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) helpDialog.close(); });
 
       $('#versionBadge').textContent = `v${APP_CONFIG.version}`; $('#buildVersion').textContent = APP_CONFIG.version; $('#builtAt').textContent = BUILD_MANIFEST.generatedAtUtc || '—'; $('#dependencyCount').textContent = String(BUILD_MANIFEST.dependencies?.length || 0);
       applyLanguage(); showOnly('empty');
