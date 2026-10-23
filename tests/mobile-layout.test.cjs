@@ -1,7 +1,8 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
-const html = fs.readFileSync(process.env.OFFICE_TEST_HTML || 'src/index.template.html', 'utf8');
+const path = require('node:path');
+const html = fs.readFileSync(process.env.OFFICE_TEST_HTML || path.join(__dirname, '../src/index.template.html'), 'utf8');
 const helpStart = html.lastIndexOf('<dialog', html.indexOf('id="helpDialog"'));
 const help = html.slice(helpStart, html.indexOf('</dialog>', helpStart));
 test('only the informational page footer hides at the existing phone breakpoint', () => {
