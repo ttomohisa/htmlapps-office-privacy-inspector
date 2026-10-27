@@ -1,13 +1,16 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { JSDOM } = require('jsdom');
-function app({ language = 'en-US', savedLanguage = null, storageUnavailable = false } = {}) {
+function app({ language = 'en-US', languages=[language], savedLanguage = null, commonLanguage=null, url='https://test.invalid', storageUnavailable = false } = {}) {
   const source = fs.readFileSync(process.env.OFFICE_TEST_HTML || path.join(__dirname, '../src/index.template.html'), 'utf8');
   const config = JSON.parse(fs.readFileSync(path.join(__dirname, '../app.config.json')));
-  const dom = new JSDOM(source.replace(/<script>[\s\S]*?<\/script>/g, ''), { url: 'https://test.invalid', runScripts: 'outside-only' });
+  const dom = new JSDOM(source.replace(/<script>[\s\S]*?<\/script>/g, ''), { url, runScripts: 'outside-only' });
   const w = dom.window;
   Object.defineProperty(w.navigator, 'language', { value: language });
+  Object.defineProperty(w.navigator,'languages',{value:languages});
   if (savedLanguage) w.localStorage.setItem(`${config.slug}:language`, savedLanguage);
+  if(commonLanguage)w.localStorage.setItem('browser-kitty:ui-language:v1',commonLanguage);
+  const storageWrites=[],storageSet=w.Storage.prototype.setItem;w.Storage.prototype.setItem=function(key,value){storageWrites.push([key,value]);return storageSet.call(this,key,value)};
   if (storageUnavailable) {
     w.Storage.prototype.getItem = w.Storage.prototype.setItem = () => { throw new Error('Storage unavailable'); };
   }
@@ -30,6 +33,8 @@ function app({ language = 'en-US', savedLanguage = null, storageUnavailable = fa
   code = code.replace(/\}\)\(\);\s*$/, `window.testApi = {
     inspectSelectedFile, resetApp, inspectOfficeFile, parseZipDirectory, readZipEntry, readZipText, rebuildZip,
     buildCleanedOfficeBytes, validateCleanupReinspection, createCleanedCopy, updateCleanupSelection,
+    interceptBuild(interceptor) { const original=buildCleanedOfficeBytes;buildCleanedOfficeBytes=(...args)=>interceptor(original,...args); },
+    get output() { return {blob:cleanupBlob,url:cleanupBlobUrl,targets:cleanupSelectedTargetsSnapshot.slice()}; },
     get result() { return currentResult; }, get after() { return cleanupAfterResult; },
     get generation() { return sourceGeneration; },
     interceptInspection(interceptor) { const original = inspectOfficeFile; inspectOfficeFile = (...args) => interceptor(original, ...args); },
@@ -37,7 +42,8 @@ function app({ language = 'en-US', savedLanguage = null, storageUnavailable = fa
     setInspection: result => { currentResult = result; renderResult(result); showOnly('result'); },
     setCleanup: (after, error = null) => { cleanupAfterResult = after; cleanupReinspectionError = error; cleanupBlob = new Blob(['test']); }
   }; })();`);
+  w.eval(fs.readFileSync(path.join(__dirname,'../components/ui-conventions.js'),'utf8'));
   w.eval(code);
-  return { w, api: w.testApi, downloads, blobs, revoked, close: () => w.close(), file: (name, bytes) => new File([bytes || fs.readFileSync(path.join(__dirname, 'fixtures', name))], name) };
+  return { w, api: w.testApi, storageWrites, downloads, blobs, revoked, close: () => w.close(), file: (name, bytes) => new File([bytes || fs.readFileSync(path.join(__dirname, 'fixtures', name))], name) };
 }
 module.exports = { app };

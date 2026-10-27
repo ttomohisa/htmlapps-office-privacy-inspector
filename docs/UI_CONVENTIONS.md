@@ -1,0 +1,11 @@
+# Common UI v1
+
+Fixed JS/CSS/lock embed in build-standalone.ps1 through scripts/embed-ui-conventions.ps1. No runtime network or parser dependency changed. DOCX/XLSX/PPTX remain separate Office outputs; schema v1 summary remains counts-only and excludes source names, authors, values, text, URLs and raw errors. Existing blocked signature/macro/partial/relationship packages and all ZIP/OOXML rewrite rules remain.
+
+Work stays in this tab. Last created copy keeps its selected target snapshot and verified/unknown reinspection result. Changed choices label it Previous result. New bytes and reinspection stage before replacing the prior result; failed recreation keeps old Blob/URL/name and displays a persistent retry reason. Summary before/after counts refer to the last created copy. Browser handoff says Download started; output and summary names stay editable with their original fixed extensions.
+
+Shared busy states disable conflicting source/reset/cleanup controls; no Stop is claimed for noncancellable cleanup. Source replacement and discard name actual current source/copy and reuse cancel-first AppConfirm with Escape/backdrop/focus restoration and live translation. No original files or shared-language storage are removed. Language URL/common/legacy/browser/English resolution writes nothing on startup. Explicit switch alone writes shared key; denied storage shows a screen-only notice. Language preserves raw filename drafts, checkboxes, expanded findings, running cleanup and persistent keyed errors/save notices.
+
+Human acceptance pending: actual native dialogs/focus/scrolling on desktop and short narrow mobile, primary/header touch reachability, screen-reader status/error announcements, Office-application opening and layout of cleaned DOCX/XLSX/PPTX files, self-extract offline startup and actual downloads. Dense finding disclosures and choice checkboxes retain existing geometry; executable/header actions target 44px. JSDOM production-function and decoded payload tests do not establish browser/device acceptance.
+
+Pinned JS/CSS have explicit LF checkout attributes. Validate a fresh core.autocrlf=true checkout, not only current working bytes: Windows checkout conversion previously changed the bytes and failed the locked embed check. Never change the fixed hashes to accommodate line-ending conversion.

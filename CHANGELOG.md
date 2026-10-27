@@ -288,3 +288,6 @@ All notable changes to this template are documented here.
 - Responsive bilingual starter interface with local persistence and export.
 - GitHub Actions for build validation and GitHub Pages deployment.
 - LLM implementation contract, product specification, architecture, and workflow guides.
+
+
+Common UI v1: explicit scoped artifact delivery, tab retention, busy/prerequisite state, retained previous Office copy, cancel-first scoped replacement/reset and work-preserving shared language preferences.

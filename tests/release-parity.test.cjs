@@ -9,6 +9,7 @@ const config = JSON.parse(fs.readFileSync(path.join(root, 'app.config.json'), 'u
 
 function normalizeBuildValues(html) {
   const icon = 'data:image/svg+xml;base64,' + fs.readFileSync(path.join(root, 'assets/favicon.svg')).toString('base64');
+  html=html.replace('__BK_UI_CSS__',fs.readFileSync(path.join(root,'components/ui-conventions.css'),'utf8')).replace('__BK_UI_JS__',fs.readFileSync(path.join(root,'components/ui-conventions.js'),'utf8'));
   return html.replaceAll(icon, '__APP_ICON_DATA_URI__')
     .replace(/^      const (APP_CONFIG|BUILD_MANIFEST|assetBundle) = .*;$/gm, '      const $1 = __BUILD_VALUE__;');
 }

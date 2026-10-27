@@ -2111,3 +2111,8 @@ Officeファイルは外部サーバーへ送信せず、ブラウザ内で処�
 - Hide only the informational page footer at the existing 720px phone breakpoint, including the empty/landing state; keep functional mobile controls and their reserved space unchanged.
 - Keep the existing build disclosure, IDs, values and localization as the quiet final item in Help. Header versions and the already canonical local-processing badge are unchanged.
 - Native disclosure keyboard activation must not dismiss Help; close button, Escape, genuine backdrop dismissal and internal scrolling remain available.
+
+
+## Common UI v1 (2026-10-27)
+
+Work/Office bytes remain in this tab only. Save cleaned Office file and Save inspection summary identify different artifacts; summary schema v1 remains counts-only with unknown nulls and its safety caveat. Cleanup choices mark the last created copy as Previous result rather than removing it. Before/after summary counts refer to that last copy. Stage new bytes/reinspection before replacing a valid result; failed recreation retains it. Explicit native unavailable/busy states block conflicting inputs, source replacement and reset during cleanup. There is no Stop for noncancellable cleanup. Removal/reset/replacement names the actual copy/source scope, uses the existing cancel-first dialog and never changes original files. URL/common/legacy/browser/English language priority is read-only on startup; only an explicit switch writes the common key. Language preserves raw filename drafts, selections, expanded findings, active cleanup, persistent errors and translated open confirmations.

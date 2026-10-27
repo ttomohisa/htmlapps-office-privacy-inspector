@@ -67,11 +67,11 @@ test('cancelled cleanup confirmation cannot act on a replacement source', async 
   a.w.document.querySelector('#appConfirmOk').click(); await pending;
   assert.equal(a.api.after, null); assert.equal(a.w.document.querySelector('#cleanupOutput').hidden, true);
 });
-test('cleanup changes clear after counts, failed reinspection remains unknown, and language preserves report name', async t => {
+test('cleanup choices retain previous after counts, failed reinspection remains unknown, and language preserves report name', async t => {
   const a = app(); t.after(a.close); await a.api.inspectSelectedFile(a.file('clean.docx'));
   const input = a.w.document.querySelector('#reportFilenameInput'); input.value = 'chosen-review';
   a.api.setCleanup(a.api.result); a.w.document.querySelector('#downloadReportButton').click(); assert.equal(JSON.parse(await a.downloads[0].blob.text()).cleanup.status, 'verified');
-  a.api.updateCleanupSelection(); a.w.document.querySelector('#downloadReportButton').click(); assert.equal(JSON.parse(await a.downloads[1].blob.text()).cleanup.status, 'not_performed');
+  a.api.updateCleanupSelection(); a.w.document.querySelector('#downloadReportButton').click(); assert.equal(JSON.parse(await a.downloads[1].blob.text()).cleanup.status, 'verified');
   a.api.setCleanup(a.api.result, new Error(secret)); a.w.document.querySelector('#downloadReportButton').click();
   const failed = JSON.parse(await a.downloads[2].blob.text()); assert.equal(failed.cleanup.after, null); assert.equal(failed.cleanup.status, 'reinspection_failed'); assert.ok(!JSON.stringify(failed).includes(secret));
   a.w.document.querySelector('#languageButton').click(); assert.equal(input.value, 'chosen-review');

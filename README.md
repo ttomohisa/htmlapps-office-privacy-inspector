@@ -227,3 +227,6 @@ Bug reports and feature proposals are welcome through GitHub Issues. See [CONTRI
 Copyright © 2026 ttomohisa
 
 Licensed under the [MIT License](LICENSE).
+
+
+Work stays in this tab. Cleanup choices mark the last copy as Previous result; failed recreation keeps it. Save the cleaned Office copy or a separate counts-only inspection summary. Download started confirms browser handoff.

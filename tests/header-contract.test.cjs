@@ -27,9 +27,9 @@ for (const [locale, language] of [['ja-JP', 'ja'], ['en-US', 'en']]) {
     for (const expected of [language === 'ja' ? 'en' : 'ja', language, language === 'ja' ? 'en' : 'ja']) {
       a.w.document.querySelector('#languageButton').click();
       assertHeader(a, expected);
-      assert.equal(a.w.localStorage.getItem(`${config.slug}:language`), expected);
+      assert.equal(a.w.localStorage.getItem(`browser-kitty:ui-language:v1`), expected);
     }
-    const savedLanguage = a.w.localStorage.getItem(`${config.slug}:language`);
+    const savedLanguage = a.w.localStorage.getItem(`browser-kitty:ui-language:v1`);
     const reloaded = app({ language: locale, savedLanguage }); t.after(reloaded.close);
     assertHeader(reloaded, savedLanguage);
   });

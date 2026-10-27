@@ -315,6 +315,8 @@
       *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
     }
   </style>
+<style>__BK_UI_CSS__</style>
+<script data-bk-ui-version="1.0.0">__BK_UI_JS__</script>
 </head>
 <body>
   <header class="app-header">
@@ -327,8 +329,8 @@
         </div>
       </div>
       <div class="header-actions">
-        <button class="language-button" id="languageButton" type="button" aria-label="英語に切り替え" title="英語に切り替え">EN</button>
-        <button class="icon-button header-icon-button" id="helpButton" type="button" data-i18n-title="helpTitle" data-i18n-aria-label="helpTitle" title="使い方と注意事項" aria-label="使い方と注意事項">
+        <button class="language-button" id="languageButton" data-bk-button data-bk-variant="secondary" data-bk-header-action type="button" aria-label="英語に切り替え" title="英語に切り替え">EN</button>
+        <button class="icon-button header-icon-button" id="helpButton" data-bk-button data-bk-variant="secondary" data-bk-header-action type="button" data-i18n-title="helpTitle" data-i18n-aria-label="helpTitle" title="使い方と注意事項" aria-label="使い方と注意事項">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.8 9a2.35 2.35 0 1 1 3.72 1.9c-.92.67-1.52 1.12-1.52 2.1"/><path d="M12 17h.01"/></svg>
         </button>
       </div>
@@ -336,6 +338,7 @@
   </header>
 
   <main class="main">
+<p id="retentionStatus" data-bk-save-status></p><p id="languageStatus" role="status"></p><p id="operationStatus" role="status" aria-live="polite"></p><p id="actionReason" role="status"></p>
     <section class="page-intro" aria-labelledby="heroTitle">
       <div>
         <h1 id="heroTitle" data-i18n="introTitle">Officeファイルを共有前に確認</h1>
@@ -360,7 +363,7 @@
           </div>
           <p class="drop-title" id="dropTitle" data-i18n="dropTitle">DOCX / XLSX / PPTXをここにドロップ</p>
           <p class="drop-sub" id="dropSub" data-i18n="dropSub">またはファイルを選択してください</p>
-          <button class="button primary" id="pickFileButton" type="button">
+          <button class="button primary" id="pickFileButton" data-bk-button data-bk-variant="primary" type="button">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h6l2 2h8v10H4z"/></svg><span data-i18n="pickFile">ファイルを選択</span>
           </button>
           <input class="sr-only" id="fileInput" type="file" accept=".docx,.xlsx,.pptx,.docm,.xlsm,.pptm,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.openxmlformats-officedocument.presentationml.presentation,application/vnd.ms-word.document.macroEnabled.12,application/vnd.ms-excel.sheet.macroEnabled.12,application/vnd.ms-powerpoint.presentation.macroEnabled.12">
@@ -386,8 +389,8 @@
             <p class="file-meta" id="fileMeta">—</p>
           </div>
           <div class="header-button-row">
-            <button class="button" id="chooseAnotherButton" type="button" data-i18n="chooseAnother">別のファイルを選択</button>
-            <button class="button danger" id="resetButton" type="button" data-i18n="reset">リセット</button>
+            <button class="button" id="chooseAnotherButton" data-bk-button data-bk-variant="secondary" type="button" data-i18n="chooseAnother">別のファイルを選択</button>
+            <button class="button danger" id="resetButton" data-bk-button data-bk-variant="secondary" type="button" data-i18n="reset">リセット</button>
           </div>
         </div>
       </div>
@@ -418,8 +421,8 @@
           <div class="summary-preview-list" id="summaryPreviewList"></div>
         </div>
         <div class="result-quick-actions" id="resultQuickActions">
-          <button class="button" id="jumpToFindingsButton" type="button" data-i18n="viewFindings">確認項目を見る</button>
-          <button class="button primary" id="quickCleanupButton" type="button" data-i18n="createCleaned">クリーンアップしてコピーを作成</button>
+          <button class="button" id="jumpToFindingsButton" data-bk-button data-bk-variant="secondary" type="button" data-i18n="viewFindings">確認項目を見る</button>
+          <button class="button primary" id="quickCleanupButton" data-bk-button data-bk-variant="primary" type="button" data-i18n="createCleaned">クリーンアップしてコピーを作成</button>
           <span class="result-quick-selection" id="quickCleanupSelectionCount"></span>
         </div>
       </div>
@@ -430,7 +433,8 @@
       <p class="cleanup-scope-note" data-i18n="reportCaveat">検出0件でも安全・匿名とは限りません。一部未検査の件数は不明として保存します。本文や画像は別途確認してください。</p>
       <label class="output-name-field"><span data-i18n="reportFilenameLabel">サマリーのファイル名</span><div class="output-name-control"><input id="reportFilenameInput" type="text" value="inspection-summary" maxlength="180" autocomplete="off" spellcheck="false" aria-describedby="reportFilenameHint"><span class="output-name-extension">.json</span></div></label>
       <p class="cleanup-scope-note" id="reportFilenameHint" data-i18n="reportFilenameHint">文書名は初期ファイル名にも使用しません。共有する場合は、入力した名前と件数も確認してください。</p>
-      <button class="button" id="downloadReportButton" type="button" disabled data-i18n="downloadReport">検査サマリーを保存 (.json)</button>
+      <button class="button" id="downloadReportButton" data-bk-button data-bk-variant="primary" type="button" disabled data-i18n="downloadReport">検査サマリーを保存 (.json)</button>
+      <p data-i18n="reportScope"></p>
       <p class="cleanup-save-status" id="reportSaveStatus" role="status" aria-live="polite"></p>
     </section>
 
@@ -503,14 +507,14 @@
       <div id="cleanupBlocked" class="cleanup-blocked" hidden></div>
       <div id="cleanupControls">
         <div class="cleanup-actions">
-          <button class="button primary" id="createCleanedButton" type="button" data-i18n="createCleaned">クリーンアップしてコピーを作成</button>
+          <button class="button primary" id="createCleanedButton" data-bk-button data-bk-variant="primary" type="button" data-i18n="createCleaned">クリーンアップしてコピーを作成</button>
           <span class="cleanup-selection-count" id="cleanupSelectionCount">—</span>
         </div>
         <div class="cleanup-list" id="cleanupList"></div>
         <p class="cleanup-scope-note" data-i18n="cleanupScopeNote">変更履歴、非表示シート、外部参照などは変更されません。</p>
         <div class="cleanup-output" id="cleanupOutput" hidden>
           <strong id="cleanupCompletionTitle" data-i18n="cleanupReady">クリーンアップして再検査しました</strong>
-          <p id="cleanupOutputMeta">—</p>
+          <p id="cleanupPreviousNotice" role="status"></p><p id="cleanupOutputMeta">—</p>
           <div class="cleanup-reinspection-warning" id="cleanupReinspectionWarning" hidden data-i18n="cleanupReinspectionWarning">クリーンアップ済みコピーは作成できましたが、再検査を完了できませんでした。保存前にOfficeアプリでも内容を確認してください。</div>
           <div class="cleanup-comparison" aria-label="Before / After">
             <div class="cleanup-compare-card"><span data-i18n="cleanupBefore">削除前の確認項目</span><strong id="cleanupBeforeCount">—</strong></div>
@@ -530,7 +534,7 @@
             <span class="sr-only" id="cleanupFilenameHint" data-i18n="cleanupFilenameHint">拡張子は元のOffice形式のまま保存されます。</span>
           </label>
           <div class="cleanup-output-actions">
-            <button class="button primary" id="downloadCleanedButton" type="button" data-i18n="downloadCleaned">クリーンアップ済みOfficeファイルを保存</button>
+            <button class="button primary" id="downloadCleanedButton" data-bk-button data-bk-variant="primary" type="button" data-i18n="downloadCleaned">クリーンアップ済みOfficeファイルを保存</button>
             <span class="cleanup-save-status" id="cleanupSaveStatus" aria-live="polite"></span>
           </div>
         </div>
@@ -555,7 +559,7 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v5"/><path d="M12 17h.01"/></svg>
         <div><h2 id="errorTitle">—</h2><p id="errorMessage">—</p></div>
       </div>
-      <div class="error-actions"><button class="button primary" id="retryButton" type="button" data-i18n="tryAnother">別のファイルを選択</button></div>
+      <div class="error-actions"><button class="button primary" id="retryButton" data-bk-button data-bk-variant="secondary" type="button" data-i18n="tryAnother">別のファイルを選択</button></div>
       <details class="detail-error" id="errorDetailsWrap" hidden><summary data-i18n="errorDetails">技術的な詳細</summary><div id="errorDetails"></div></details>
     </section>
     <!-- APP:END -->
@@ -564,8 +568,8 @@
   </main>
 
   <div class="mobile-result-actions" id="mobileResultActions" hidden aria-label="Result actions">
-    <button class="button" id="mobileFindingsButton" type="button" data-i18n="viewFindings">確認項目</button>
-    <button class="button primary" id="mobileCleanupButton" type="button" data-i18n="createCleanedShort">クリーンアップ</button>
+    <button class="button" id="mobileFindingsButton" data-bk-button data-bk-variant="secondary" type="button" data-i18n="viewFindings">確認項目</button>
+    <button class="button primary" id="mobileCleanupButton" data-bk-button data-bk-variant="primary" type="button" data-i18n="createCleanedShort">クリーンアップ</button>
   </div>
 
   <footer><span id="footerName">Office Privacy Inspector</span> · MIT License · <span data-i18n="footer">Officeファイルはブラウザ内で処理されます</span></footer>
@@ -579,13 +583,13 @@
   <dialog class="app-confirm-dialog" id="appConfirmDialog" aria-labelledby="appConfirmTitle" aria-describedby="appConfirmMessage">
     <div class="app-confirm-header">
       <h2 class="app-confirm-title" id="appConfirmTitle">確認</h2>
-      <button class="app-confirm-close" id="appConfirmClose" type="button" data-i18n-aria-label="close" aria-label="閉じる"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+      <button class="app-confirm-close" id="appConfirmClose" data-bk-button data-bk-variant="secondary" type="button" data-i18n-aria-label="close" aria-label="閉じる"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
     </div>
     <div class="app-confirm-body">
       <p class="app-confirm-message" id="appConfirmMessage"></p>
       <div class="app-confirm-actions">
-        <button class="app-confirm-button" id="appConfirmCancel" type="button">キャンセル</button>
-        <button class="app-confirm-button primary" id="appConfirmOk" type="button">実行する</button>
+        <button class="app-confirm-button" id="appConfirmCancel" data-bk-button data-bk-variant="secondary" type="button">キャンセル</button>
+        <button class="app-confirm-button primary" id="appConfirmOk" data-bk-button data-bk-variant="danger" type="button">実行する</button>
       </div>
     </div>
   </dialog>
@@ -593,7 +597,7 @@
   <dialog id="helpDialog" aria-labelledby="helpTitle">
     <div class="dialog-header">
       <h2 id="helpTitle" data-i18n="helpTitle">使い方と注意事項</h2>
-      <button class="icon-button" id="closeHelpButton" type="button" data-i18n-title="close" data-i18n-aria-label="close" title="閉じる" aria-label="閉じる"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="m7 7 10 10M17 7 7 17"/></svg></button>
+      <button class="icon-button" id="closeHelpButton" data-bk-button data-bk-variant="secondary" type="button" data-i18n-title="close" data-i18n-aria-label="close" title="閉じる" aria-label="閉じる"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="m7 7 10 10M17 7 7 17"/></svg></button>
     </div>
     <div class="dialog-body">
       <!-- APP:HELP:BEGIN -->
@@ -606,6 +610,7 @@
         <li data-i18n="helpStep3">削除対象を選んでクリーンアップ済みコピーを作成します。生成後は自動で再検査し、削除前 / 削除後と残っている確認項目を表示します。元ファイルは上書きしません。</li>
       </ol>
       <p data-i18n="helpReport">「検査サマリーを保存」で件数のみのJSONを保存できます。クリーンアップ後は再検査が完了した場合に削除前後の件数を含みます。0件は安全・匿名の保証ではありません。</p>
+      <p data-i18n="helpCommonUi"></p>
       <h3 data-i18n="helpPrivacyTitle">プライバシー</h3>
       <p data-i18n="helpPrivacyBody">Officeファイルの読み込みと解析はブラウザ内で行われ、このアプリから外部サーバーへ送信されません。実行時の外部通信もCSPで無効化しています。</p>
       <h3 data-i18n="helpChecksTitle">現在確認できるもの</h3>
@@ -729,17 +734,22 @@
           detailSheet: 'Sheet', detailState: 'State', detailRows: 'Hidden rows', detailColumns: 'Hidden columns', detailCell: 'Used at', detailFormula: 'Formula', detailName: 'Name', detailScope: 'Scope', detailSource: 'Source', detailProvider: 'Provider', detailConnectionString: 'Connection string', detailPresentMasked: 'Present (content hidden)', detailPivotCache: 'Pivot cache', detailSlicerCache: 'Slicer cache', detailHidden: 'Hidden', detailVisible: 'Visible', detailWorkbook: 'Workbook', detailSlide: 'Slide', detailTitle: 'Title', detailNotes: 'Notes', detailObject: 'Object', detailPosition: 'Position', detailBounds: 'Bounds', detailThread: 'Thread', detailAssignedTo: 'Assigned to',
           detailAuthor: 'Author', detailDate: 'Date', detailText: 'Text', detailType: 'Type', detailPart: 'Part', detailTarget: 'Target', detailNamespace: 'Namespace', detailSize: 'Size', detailUnique: 'Unique values', detailCharacters: 'Estimated characters', detailAuthors: 'Authors', detailExternalTemplate: 'External template', detailHyperlink: 'External hyperlink', detailExternalImage: 'External image', detailRelationship: 'External reference', detailEmbedded: 'Embedded file', detailMore: '{count} more',
           helpBasicsTitle: 'Basics', helpStep1: 'Choose a DOCX / XLSX / PPTX file or drop it onto the page. DOCM / XLSM / PPTM are inspection-only.', helpStep2: 'Review author metadata and document information. DOCX / XLSX / PPTX files also show format-specific findings.', helpStep3: 'Choose what to remove and create a cleaned copy. The generated file is automatically reinspected to show Before / After counts and remaining findings. The original file is not overwritten.', helpPrivacyTitle: 'Privacy', helpPrivacyBody: 'Office files are read and inspected inside the browser and are not sent to an external server by this app. Runtime network connections are also blocked by CSP.', helpChecksTitle: 'What this version checks', helpCheck1: 'Core Properties (creator, last editor, created date, last printed date, and more)', helpCheck2: 'Extended Properties (company, manager, editing time, Office application info, and more)', helpCheck3: 'Custom Properties (custom property name, type, and value)', helpCheck4: 'DOCX: comments, tracked changes, hidden text, editing session information, external references, embedded content, and Custom XML', helpCheck5: 'XLSX: hidden / Very Hidden sheets, hidden rows and columns, external references, defined names, connections, Pivot / Slicer caches, embedded content, and macro-related parts', helpCheck6: 'PPTX: comments, speaker notes, hidden slides, off-slide objects, external references, embedded content, Custom XML, and macro-related parts', helpNotesTitle: 'Notes', helpNote1: 'Visible text and images are not automatically judged for confidentiality. Tracked changes, hidden sheets, external references, and similar findings remain unchanged in v1.0.0. Comments and speaker notes are removed only when you select them.', helpNote2: 'Finding nothing in this inspection does not guarantee that the file contains no confidential information.', helpNote3: 'Encrypted or password-protected Office files and legacy DOC / XLS / PPT formats are not supported. Files with signatures, macro-related data, or partial inspection failures are inspection-only.', helpOffline: 'The distributable dist/index.html is designed to open as a standalone file.',
-          cleanupSectionTitle: 'Choose information to clean up', cleanupSectionBody: 'Remove selected safer metadata, reviewed comments, or speaker notes into a separate copy without overwriting the original file.', cleanupEmpty: 'No information removable by this version was found.', cleanupBlockedSignature: 'This file contains a digital signature, so it is inspection-only. Rewriting it may affect signature validity.', cleanupBlockedMacro: 'Macro / ActiveX-related data is present, so this file is kept inspection-only as a safety precaution.', cleanupBlockedPartial: 'Some information could not be inspected, so this file is inspection-only. Uninspected parts are not treated as safe.', cleanupBlockedRelationships: 'Duplicate Relationship IDs are present, so safe package rebuilding cannot be assumed. This file is inspection-only.', cleanupBlockedGeneric: 'This package cannot be confidently rewritten without risk, so it is inspection-only.', cleanupScopeNote: 'Tracked changes, hidden sheets, external references, and similar findings are not changed.', cleanupGroupMetadata: 'Basic metadata', cleanupGroupCustom: 'Custom properties', cleanupGroupWord: 'Word editing information', cleanupRsid: 'Editing session information', cleanupRsidValue: '{count} RSID entries', createCleaned: 'Create cleaned copy', cleanupSelected: '{selected} of {total} selected', cleanupWorking: 'Cleaning up and reinspecting…', cleanupReady: 'Cleanup and reinspection complete', cleanupPartialTitle: 'Cleaned copy created, but reinspection could not be completed', cleanupReinspectionWarning: 'The cleaned copy was created, but reinspection could not be completed. Review the file in an Office application before sharing it.', cleanupOutputMeta: '{name} · {size}', cleanupBefore: 'Findings before cleanup', cleanupAfter: 'Findings after cleanup', cleanupRemoved: 'Findings removed', cleanupRemainingTitle: 'Remaining findings', cleanupRemainingMetadata: 'Basic metadata', cleanupRemainingNone: 'No remaining findings were found by the current inspection.', cleanupRemainingUnknown: 'Remaining findings cannot be shown because reinspection did not complete.', cleanupFilenameLabel: 'Save file name', cleanupFilenameHint: 'The original Office file extension is kept.', downloadCleaned: 'Save cleaned Office file', cleanupCreatedToast: 'Cleanup and reinspection complete', cleanupSaveStarted: 'Save started: {name}', cleanupSavedToast: 'Save started', cleanupNothingSelected: 'Select at least one item to remove.', cleanupFailed: 'Could not create the cleaned copy.', cleanupCoreCreator: 'Creator', cleanupCoreLastModifiedBy: 'Last modified by', cleanupCoreLastPrinted: 'Last printed', cleanupExtCompany: 'Company', cleanupExtManager: 'Manager', cleanupExtTotalTime: 'Total editing time', cleanupComments: 'Remove all comments', cleanupCommentsValue: '{count} comments. Comment text and author information will be removed.', cleanupGroupPowerPoint: 'PowerPoint comments / notes', cleanupAllNotes: 'Remove all speaker notes', cleanupAllNotesValue: '{count} slides contain speaker notes.', cleanupNoteSlide: 'Speaker notes on Slide {slide}', cleanupConfirmTitle: 'Confirm removal', cleanupConfirmCommentsBody: 'All comment text and author information will be removed from the cleaned copy. The original file will not be changed. Continue?', cleanupConfirmNotesBody: 'All speaker notes will be removed from the cleaned copy. The original file will not be changed. Continue?', cleanupConfirmMixedBody: 'Comments and speaker notes will be removed from the cleaned copy. The original file will not be changed. Continue?', cleanupConfirmAction: 'Remove and create copy',
+          cleanupSectionTitle: 'Choose information to clean up', cleanupSectionBody: 'Remove selected safer metadata, reviewed comments, or speaker notes into a separate copy without overwriting the original file.', cleanupEmpty: 'No information removable by this version was found.', cleanupBlockedSignature: 'This file contains a digital signature, so it is inspection-only. Rewriting it may affect signature validity.', cleanupBlockedMacro: 'Macro / ActiveX-related data is present, so this file is kept inspection-only as a safety precaution.', cleanupBlockedPartial: 'Some information could not be inspected, so this file is inspection-only. Uninspected parts are not treated as safe.', cleanupBlockedRelationships: 'Duplicate Relationship IDs are present, so safe package rebuilding cannot be assumed. This file is inspection-only.', cleanupBlockedGeneric: 'This package cannot be confidently rewritten without risk, so it is inspection-only.', cleanupScopeNote: 'Tracked changes, hidden sheets, external references, and similar findings are not changed.', cleanupGroupMetadata: 'Basic metadata', cleanupGroupCustom: 'Custom properties', cleanupGroupWord: 'Word editing information', cleanupRsid: 'Editing session information', cleanupRsidValue: '{count} RSID entries', createCleaned: 'Create cleaned copy', cleanupSelected: '{selected} of {total} selected', cleanupWorking: 'Cleaning up and reinspecting…', cleanupReady: 'Cleanup and reinspection complete', cleanupPartialTitle: 'Cleaned copy created, but reinspection could not be completed', cleanupReinspectionWarning: 'The cleaned copy was created, but reinspection could not be completed. Review the file in an Office application before sharing it.', cleanupOutputMeta: '{name} · {size}', cleanupBefore: 'Findings before cleanup', cleanupAfter: 'Findings after cleanup', cleanupRemoved: 'Findings removed', cleanupRemainingTitle: 'Remaining findings', cleanupRemainingMetadata: 'Basic metadata', cleanupRemainingNone: 'No remaining findings were found by the current inspection.', cleanupRemainingUnknown: 'Remaining findings cannot be shown because reinspection did not complete.', cleanupFilenameLabel: 'Save file name', cleanupFilenameHint: 'The original Office file extension is kept.', downloadCleaned: 'Save cleaned Office file', cleanupCreatedToast: 'Cleanup and reinspection complete', cleanupSaveStarted: 'Download started: {name}', cleanupSavedToast: 'Download started', cleanupNothingSelected: 'Select at least one item to remove.', cleanupFailed: 'Could not create the cleaned copy.', cleanupCoreCreator: 'Creator', cleanupCoreLastModifiedBy: 'Last modified by', cleanupCoreLastPrinted: 'Last printed', cleanupExtCompany: 'Company', cleanupExtManager: 'Manager', cleanupExtTotalTime: 'Total editing time', cleanupComments: 'Remove all comments', cleanupCommentsValue: '{count} comments. Comment text and author information will be removed.', cleanupGroupPowerPoint: 'PowerPoint comments / notes', cleanupAllNotes: 'Remove all speaker notes', cleanupAllNotesValue: '{count} slides contain speaker notes.', cleanupNoteSlide: 'Speaker notes on Slide {slide}', cleanupConfirmTitle: 'Confirm removal', cleanupConfirmCommentsBody: 'All comment text and author information will be removed from the cleaned copy. The original file will not be changed. Continue?', cleanupConfirmNotesBody: 'All speaker notes will be removed from the cleaned copy. The original file will not be changed. Continue?', cleanupConfirmMixedBody: 'Comments and speaker notes will be removed from the cleaned copy. The original file will not be changed. Continue?', cleanupConfirmAction: 'Remove and create copy',
           buildInfo: 'Build information', appVersion: 'App version', builtAt: 'Built at', dependencies: 'Embedded dependencies', footer: 'Office files are processed in your browser',
           coreTitle: 'Title', coreSubject: 'Subject', coreCreator: 'Creator', coreKeywords: 'Keywords', coreDescription: 'Description', coreLastModifiedBy: 'Last modified by', coreRevision: 'Revision', coreCreated: 'Created', coreModified: 'Modified', coreLastPrinted: 'Last printed', coreCategory: 'Category', coreContentStatus: 'Content status', coreIdentifier: 'Identifier', coreLanguage: 'Language', coreVersion: 'Version',
           extApplication: 'Application', extAppVersion: 'Application version', extCompany: 'Company', extManager: 'Manager', extTotalTime: 'Total editing time', extTemplate: 'Template', extPages: 'Pages', extWords: 'Words', extCharacters: 'Characters', extSlides: 'Slides', extNotes: 'Notes', extHiddenSlides: 'Hidden slides', extMMClips: 'Media clips', extSharedDoc: 'Shared document', extHyperlinksChanged: 'Hyperlinks changed', extLinksUpToDate: 'Links up to date', customType: 'Type', customValue: 'Value', minutes: 'min', yes: 'Yes', no: 'No'
         }
       };
 
+      Object.assign(translations.en,{reset:'Discard inspection',resetConfirmTitle:'Discard this inspection?',resetConfirmAction:'Discard inspection',resetConfirmBody:'Discard the inspection and any cleaned copy for “{name}” from this tab. The original Office file and language preference are unchanged. This cannot be undone.',replaceConfirmTitle:'Replace this inspection?',replaceConfirmBody:'Replace the inspection and any cleaned copy for “{name}” with the new file. The original files are unchanged. This cannot be undone.',replaceConfirmAction:'Replace inspection',cleanupConfirmScope:'Source: {name}. Remove {count} selected information groups from a separate copy. ',cleanupScope:'Create a copy with {selected} selected groups / {total} available groups. Save downloads the last created copy. Summary JSON contains counts only.',reportScope:'Inspection summary: the current original inspection and, when available, the last created copy. Changing cleanup choices does not change that copy.',waitForCleanup:'Cleaning up and reinspecting. Wait for completion; this operation cannot be stopped.',cleanupSaveFailed:'Could not start the Office download. Try again; the result remains available.',cleanupRetry:'Could not create the cleaned copy. Try again; the previous result remains available when present.',helpCommonUi:'Work stays in this tab only. Download started confirms browser handoff. Changing cleanup choices marks the last copy as Previous result; retry failures retain it. The inspection summary always describes the last created copy.'});
+      Object.assign(translations.ja,{reset:'検査を破棄',resetConfirmTitle:'この検査を破棄しますか？',resetConfirmAction:'検査を破棄',resetConfirmBody:'「{name}」の検査と作成済みコピーをこのタブから破棄します。元のOfficeファイルと言語設定は残ります。元に戻せません。',replaceConfirmTitle:'検査を置き換えますか？',replaceConfirmBody:'「{name}」の検査と作成済みコピーを新しいファイルの検査に置き換えます。元ファイルは変更しません。元に戻せません。',replaceConfirmAction:'検査を置き換える',cleanupConfirmScope:'元ファイル: {name}。選択した{count}グループの情報を別のコピーから取り除きます。',cleanupScope:'コピーの作成対象: 選択{selected} / 全{total}グループ。保存は前回作成したコピーが対象です。検査サマリーJSONは件数のみです。',reportScope:'検査サマリー: 現在の元ファイルの検査と前回作成したコピーの結果です。削除項目の選択変更ではコピーは変わりません。',waitForCleanup:'クリーンアップと再検査中です。中止できないため、完了までお待ちください。',cleanupSaveFailed:'Officeファイルの保存を開始できませんでした。結果は保持しています。再試行してください。',cleanupRetry:'コピーを作成できませんでした。再試行してください。前回の結果がある場合は保持します。',helpCommonUi:'作業はこのタブ内だけに保持します。保存開始は端末への保存完了を保証しません。削除項目の選択変更では作成済みコピーを「前回の結果」と表示し、再作成の失敗でも保持します。検査サマリーは前回作成したコピーの結果です。'});
+
       const $ = selector => document.querySelector(selector);
       const $$ = selector => Array.from(document.querySelectorAll(selector));
       const storageKeys = { language: `${APP_CONFIG.slug}:language` };
-      let language = readStorage(storageKeys.language) || detectLanguage();
+      let language = BrowserKittyUI.resolveLanguage({legacyKeys:[storageKeys.language]});
+      let languageSessionOnly=false, uiPhase='empty', loadingPhaseKey='loadingRead';
+      let operationErrorKey='', operationErrorDetail='', reportStatusKey='', cleanupSaveNotice=null;
       let currentFile = null;
       let currentResult = null;
       let sourceGeneration = 0;
@@ -781,11 +791,12 @@
 
       const AppConfirm = (() => {
         const dialog = $('#appConfirmDialog'); const title = $('#appConfirmTitle'); const message = $('#appConfirmMessage'); const closeButton = $('#appConfirmClose'); const cancelButton = $('#appConfirmCancel'); const okButton = $('#appConfirmOk');
-        let resolver = null; let restoreFocus = null;
+        let resolver = null; let restoreFocus = null;let activeCopy=null;
+        function refresh(){if(!dialog.open||!activeCopy)return;title.textContent=translate(activeCopy.titleKey);message.textContent=(activeCopy.scope?formatTemplate(translate('cleanupConfirmScope'),activeCopy.values):'')+formatTemplate(translate(activeCopy.messageKey),activeCopy.values);cancelButton.textContent=translate('cancel');okButton.textContent=translate(activeCopy.confirmLabelKey);}
         function finish(result) { if (!dialog.open) return; const currentResolver = resolver; resolver = null; dialog.close(); if (restoreFocus instanceof HTMLElement && restoreFocus.isConnected) restoreFocus.focus({ preventScroll: true }); restoreFocus = null; if (currentResolver) currentResolver(result); }
-        function ask({ title: heading, message: body, confirmLabel, cancelLabel, tone = 'default' } = {}) { if (dialog.open) finish(false); title.textContent = heading || translate('confirmTitle'); message.textContent = body || ''; cancelButton.textContent = cancelLabel || translate('cancel'); okButton.textContent = confirmLabel || translate('confirmAction'); okButton.classList.toggle('danger', tone === 'danger'); okButton.classList.toggle('primary', tone !== 'danger'); restoreFocus = document.activeElement; return new Promise(resolve => { resolver = resolve; dialog.showModal(); requestAnimationFrame(() => cancelButton.focus({ preventScroll: true })); }); }
+        function ask({ title: heading, message: body, confirmLabel, cancelLabel, tone = 'default',titleKey,messageKey,confirmLabelKey,values={},scope=false } = {}) { if (dialog.open) finish(false);activeCopy=titleKey?{titleKey,messageKey,confirmLabelKey,values,scope}:null; title.textContent = heading || translate('confirmTitle'); message.textContent = body || ''; cancelButton.textContent = cancelLabel || translate('cancel'); okButton.textContent = confirmLabel || translate('confirmAction'); okButton.classList.toggle('danger', tone === 'danger'); okButton.classList.toggle('primary', tone !== 'danger'); restoreFocus = document.activeElement; return new Promise(resolve => { resolver = resolve; dialog.showModal();refresh(); requestAnimationFrame(() => cancelButton.focus({ preventScroll: true })); }); }
         closeButton.addEventListener('click', () => finish(false)); cancelButton.addEventListener('click', () => finish(false)); okButton.addEventListener('click', () => finish(true)); dialog.addEventListener('cancel', event => { event.preventDefault(); finish(false); }); dialog.addEventListener('click', event => { const rect = dialog.getBoundingClientRect(); if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) finish(false); });
-        return Object.freeze({ ask });
+        return Object.freeze({ ask,refresh });
       })();
       window.AppConfirm = AppConfirm;
 
@@ -797,6 +808,25 @@
         return Object.freeze({ show, dismiss });
       })();
       window.AppToast = AppToast;
+
+      function updateConventionState(){
+        BrowserKittyUI.setSaveStatus($('#retentionStatus'),{mode:'session',language});
+        $('#languageStatus').textContent=languageSessionOnly?BrowserKittyUI.text('languageSessionOnly',language):'';
+        const selected=selectedCleanupTargets(),total=$$('#cleanupList input[type="checkbox"]').length,blocked=Boolean(currentResult?.package?.cleanupBlockedReasons?.length);
+        const canCreate=Boolean(currentResult)&&!blocked&&selected.length>0;
+        for(const id of ['createCleanedButton','quickCleanupButton','mobileCleanupButton'])BrowserKittyUI.setButtonState($('#'+id),cleanupBusy?'busy':canCreate?'ready':'unavailable');
+        for(const id of ['pickFileButton','chooseAnotherButton','retryButton','resetButton'])BrowserKittyUI.setButtonState($('#'+id),cleanupBusy?'busy':id==='resetButton'&&!currentFile?'unavailable':'ready');
+        BrowserKittyUI.setButtonState($('#downloadCleanedButton'),cleanupBusy?'busy':cleanupBlob?'ready':'unavailable');
+        $('#cleanupFilenameInput').disabled=cleanupBusy;$('#reportFilenameInput').disabled=cleanupBusy;
+        $$('#cleanupList input[type="checkbox"]').forEach(input=>{input.disabled=cleanupBusy||Boolean($('#cleanupList input[data-cleanup-target="pptx:notes:all"]')?.checked&&input.dataset.cleanupTarget.startsWith('pptx:note:'))});
+        $('#actionReason').textContent=cleanupBusy?translate('waitForCleanup'):currentResult?formatTemplate(translate('cleanupScope'),{selected:formatNumber(selected.length),total:formatNumber(total)}):'';
+        $('#operationStatus').textContent=operationErrorKey?translate(operationErrorKey)+(operationErrorDetail?' '+operationErrorDetail:''):'';$('#operationStatus').setAttribute('role',operationErrorKey?'alert':'status');
+        if(reportStatusKey)$('#reportSaveStatus').textContent=translate(reportStatusKey);
+        if(cleanupSaveNotice)$('#cleanupSaveStatus').textContent=formatTemplate(translate(cleanupSaveNotice.key),cleanupSaveNotice.values);
+        const previous=cleanupBlob&&(cleanupBusy||JSON.stringify([...selected].sort())!==JSON.stringify([...cleanupSelectedTargetsSnapshot].sort()));
+        $('#cleanupPreviousNotice').textContent=previous?BrowserKittyUI.text('previousResult',language):'';
+        if(cleanupBusy)$('#createCleanedButton').textContent=translate('cleanupWorking');
+      }
 
       function readStorage(key) { try { return localStorage.getItem(key); } catch { return null; } }
       function writeStorage(key, value) { try { localStorage.setItem(key, value); } catch { /* storage can be unavailable */ } }
@@ -819,7 +849,15 @@
         document.title = APP_CONFIG.name;
         $('#brandName').textContent = APP_CONFIG.name;
         $('#footerName').textContent = APP_CONFIG.name;
-        if (currentResult) { const selection=selectedCleanupTargets(); const preserveCleanupOutput=Boolean(cleanupBlob) || cleanupVerificationFailed; if (cleanupBlob && $('#cleanupFilenameInput')?.value) cleanupFilename=editedCleanupFilename(); renderResult(currentResult,{cleanupSelection:selection,preserveCleanupOutput}); }
+        if (currentResult) {
+          const selection=selectedCleanupTargets(), drafts={cleanup:$('#cleanupFilenameInput').value,report:$('#reportFilenameInput').value};
+          const details=$$('details').map(node=>node.open);
+          renderResult(currentResult,{cleanupSelection:selection,preserveCleanupOutput:Boolean(cleanupBlob)||cleanupVerificationFailed});
+          $('#cleanupFilenameInput').value=drafts.cleanup;$('#reportFilenameInput').value=drafts.report;
+          $$('details').forEach((node,index)=>{node.open=Boolean(details[index])});
+        }
+        $('#loadingPhase').textContent=translate(loadingPhaseKey);
+        AppConfirm.refresh();updateConventionState();
         if (!$('#errorState').hidden && $('#errorState').dataset.errorCode) renderError($('#errorState').dataset.errorCode, $('#errorDetails').textContent);
       }
 
@@ -1537,17 +1575,17 @@
       }
       function releaseCleanupOutput() {
         if (cleanupBlobUrl) URL.revokeObjectURL(cleanupBlobUrl);
-        cleanupBlobUrl = ''; cleanupBlob = null; cleanupFilename = ''; cleanupAfterResult = null; cleanupReinspectionError = null; cleanupVerificationFailed = false; cleanupSelectedTargetsSnapshot = [];
+        cleanupBlobUrl = ''; cleanupBlob = null; cleanupFilename = ''; cleanupAfterResult = null; cleanupReinspectionError = null; cleanupVerificationFailed = false; cleanupSelectedTargetsSnapshot = [];cleanupSaveNotice=null;
         $('#cleanupOutput').hidden = true; delete $('#cleanupOutput').dataset.status; $('#cleanupSaveStatus').textContent = ''; $('#cleanupReinspectionWarning').hidden = true;
       }
       function syncNoteCleanupControls(changedInput = null) {
         const allNotes=$('#cleanupList input[data-cleanup-target="pptx:notes:all"]'); const individual=$$('#cleanupList input[data-cleanup-target^="pptx:note:"]');
         if (allNotes && changedInput === allNotes && allNotes.checked) individual.forEach(input => { input.checked=false; });
         if (allNotes && changedInput && changedInput !== allNotes && changedInput.dataset.cleanupTarget?.startsWith('pptx:note:') && changedInput.checked) allNotes.checked=false;
-        individual.forEach(input => { input.disabled=Boolean(allNotes?.checked); });
+        individual.forEach(input => { input.disabled=cleanupBusy || Boolean(allNotes?.checked); });
       }
       function updateCleanupSelection(resetOutput = true, changedInput = null) {
-        syncNoteCleanupControls(changedInput); const total = $$('#cleanupList input[type="checkbox"]').length; const selected = selectedCleanupTargets().length; $('#cleanupSelectionCount').textContent = formatTemplate(translate('cleanupSelected'), { selected:formatNumber(selected), total:formatNumber(total) }); $('#createCleanedButton').disabled = selected === 0; syncQuickCleanupActions(); if (resetOutput) releaseCleanupOutput();
+        syncNoteCleanupControls(changedInput); const total = $$('#cleanupList input[type="checkbox"]').length; const selected = selectedCleanupTargets().length; $('#cleanupSelectionCount').textContent = formatTemplate(translate('cleanupSelected'), { selected:formatNumber(selected), total:formatNumber(total) }); $('#createCleanedButton').disabled = selected === 0; syncQuickCleanupActions(); if(resetOutput&&!cleanupBlob)cleanupVerificationFailed=false;updateConventionState();
       }
       function renderCleanup(result, options = {}) {
         $('#createCleanedButton').textContent = translate(cleanupBusy ? 'cleanupWorking' : 'createCleaned');
@@ -1643,10 +1681,10 @@
         reportReadyGeneration = -1;
         $('#downloadReportButton').disabled = true;
         $('#reportFilenameInput').value = 'inspection-summary';
-        $('#reportSaveStatus').textContent = '';
+        $('#reportSaveStatus').textContent = '';reportStatusKey='';
       }
       function syncInspectionReport() {
-        $('#downloadReportButton').disabled = !currentResult || reportReadyGeneration !== sourceGeneration || cleanupBusy;
+        BrowserKittyUI.setButtonState($('#downloadReportButton'),cleanupBusy?'busy':currentResult&&reportReadyGeneration===sourceGeneration?'ready':'unavailable');
       }
       function reportFilename() {
         const entered = String($('#reportFilenameInput').value || '').trim().replace(/(?:\.json)+$/i, '');
@@ -1666,8 +1704,8 @@
           url = URL.createObjectURL(new Blob([`${JSON.stringify(report, null, 2)}\n`], { type: 'application/json;charset=utf-8' }));
           const anchor = document.createElement('a'); anchor.href = url; anchor.download = filename; document.body.append(anchor);
           try { anchor.click(); } finally { anchor.remove(); }
-          $('#reportSaveStatus').textContent = translate('reportSaved');
-        } catch { $('#reportSaveStatus').textContent = translate('reportFailed'); }
+          reportStatusKey='reportSaved';$('#reportSaveStatus').setAttribute('role','status');$('#reportSaveStatus').textContent = translate(reportStatusKey);
+        } catch { reportStatusKey='reportFailed';$('#reportSaveStatus').textContent = translate(reportStatusKey);$('#reportSaveStatus').setAttribute('role','alert'); }
         finally { if (url) { const downloadUrl = url; setTimeout(() => URL.revokeObjectURL(downloadUrl), 1000); } }
       }
       function remainingFindingItems(result) {
@@ -1701,7 +1739,7 @@
         $('#cleanupReinspectionWarning').hidden=!cleanupReinspectionError; const list=$('#cleanupRemainingList'); list.replaceChildren();
         if (cleanupReinspectionError) { const empty=document.createElement('div'); empty.className='empty-copy'; empty.textContent=translate('cleanupRemainingUnknown'); list.append(empty); }
         else { const items=remainingFindingItems(cleanupAfterResult); if (!items.length) { const empty=document.createElement('div'); empty.className='empty-copy'; empty.textContent=translate('cleanupRemainingNone'); list.append(empty); } else items.forEach(item=>{ const row=document.createElement('div'); row.className='cleanup-remaining-row'; const label=document.createElement('span'); label.textContent=item.label; const count=document.createElement('strong'); count.textContent=formatNumber(item.count); row.append(label,count); list.append(row); }); }
-        const parts=filenameParts(cleanupFilename); $('#cleanupFilenameInput').value=parts.stem; $('#cleanupFilenameExtension').textContent=parts.extension || ''; $('#cleanupSaveStatus').textContent=''; $('#cleanupOutput').hidden=false;
+        const parts=filenameParts(cleanupFilename); $('#cleanupFilenameInput').value=parts.stem; $('#cleanupFilenameExtension').textContent=parts.extension || ''; $('#cleanupOutput').hidden=false;updateConventionState();
       }
       function scrollToCleanupCompletion() {
         const output=$('#cleanupOutput');
@@ -1712,29 +1750,41 @@
       }
 
       async function createCleanedCopy() {
-        if (!currentFile || !currentResult || cleanupBusy) return; const generation = sourceGeneration; if (currentResult.package?.cleanupBlockedReasons?.length) { AppToast.show({message:translate('cleanupBlockedGeneric'),tone:'warning'}); return; } const targets=selectedCleanupTargets(); if (!targets.length) { AppToast.show({message:translate('cleanupNothingSelected'),tone:'warning'}); return; }
-        const hasComments=targets.includes('docx:comments') || targets.includes('pptx:comments'); const hasAllNotes=targets.includes('pptx:notes:all');
-        if (hasComments || hasAllNotes) { const body=hasComments && hasAllNotes ? translate('cleanupConfirmMixedBody') : hasComments ? translate('cleanupConfirmCommentsBody') : translate('cleanupConfirmNotesBody'); const approved=await AppConfirm.ask({title:translate('cleanupConfirmTitle'),message:body,confirmLabel:translate('cleanupConfirmAction'),cancelLabel:translate('cancel'),tone:'danger'}); if (!approved || generation !== sourceGeneration) return; }
-        cleanupBusy = true; syncInspectionReport();
-        const button=$('#createCleanedButton'); button.disabled=true; button.textContent=translate('cleanupWorking'); syncQuickCleanupActions();
-        try {
-          releaseCleanupOutput(); cleanupSelectedTargetsSnapshot=targets.slice();
-          const bytes=await buildCleanedOfficeBytes(currentFile,currentResult,targets,generation); if (generation!==sourceGeneration) return;
-          cleanupFilename=outputFilename(currentFile.name); cleanupBlob=new Blob([bytes],{type:currentFile.type || 'application/octet-stream'}); cleanupBlobUrl=URL.createObjectURL(cleanupBlob);
-          try {
-            const cleanedFile=new File([bytes],cleanupFilename,{type:currentFile.type || 'application/octet-stream',lastModified:Date.now()});
-            const afterResult=await inspectOfficeFile(cleanedFile,generation,false); if (generation!==sourceGeneration) return; validateCleanupReinspection(currentResult,afterResult,targets); cleanupAfterResult=afterResult; cleanupReinspectionError=null;
-          } catch(error) {
-            if (generation!==sourceGeneration || error?.code==='stale') throw new AppError('stale'); if (error?.code==='cleanupVerification') throw error; cleanupAfterResult=null; cleanupReinspectionError=error; console.error('Post-cleanup reinspection failed',error);
-          }
-          if (generation!==sourceGeneration) return;
-          renderCleanupCompletion(); scrollToCleanupCompletion(); AppToast.show({message:translate('cleanupCreatedToast'),tone:cleanupReinspectionError?'warning':'success'}); announce(cleanupReinspectionError ? translate('cleanupPartialTitle') : translate('cleanupCreatedToast'));
+        if (!currentFile || !currentResult || cleanupBusy) return;
+        const generation=sourceGeneration,inputFile=currentFile,before=currentResult;
+        if (before.package?.cleanupBlockedReasons?.length) {operationErrorKey='cleanupBlockedGeneric';updateConventionState();return;}
+        const targets=selectedCleanupTargets();if(!targets.length){operationErrorKey='cleanupNothingSelected';updateConventionState();return;}
+        const hasComments=targets.includes('docx:comments')||targets.includes('pptx:comments'),hasAllNotes=targets.includes('pptx:notes:all');
+        if(hasComments||hasAllNotes){const key=hasComments&&hasAllNotes?'cleanupConfirmMixedBody':hasComments?'cleanupConfirmCommentsBody':'cleanupConfirmNotesBody';
+          const approved=await AppConfirm.ask({titleKey:'cleanupConfirmTitle',messageKey:key,confirmLabelKey:'cleanupConfirmAction',values:{name:inputFile.name,count:targets.length},scope:true,tone:'danger'});
+          if(!approved||generation!==sourceGeneration||cleanupBusy)return;
         }
-        catch(error) { if (generation===sourceGeneration && error?.code !== 'stale') { releaseCleanupOutput(); cleanupVerificationFailed=error?.code==='cleanupVerification'; AppToast.show({message:translate('cleanupFailed'),tone:'warning'}); console.error(error); } }
-        finally { if (generation===sourceGeneration) { cleanupBusy=false; button.textContent=translate('createCleaned'); updateCleanupSelection(false); syncInspectionReport(); } }
+        const nextFilename=cleanupBlob?editedCleanupFilename():outputFilename(inputFile.name);
+        const draft=cleanupBlob?$('#cleanupFilenameInput').value:null;
+        cleanupBusy=true;operationErrorKey='';operationErrorDetail='';syncInspectionReport();updateConventionState();
+        const button=$('#createCleanedButton');button.textContent=translate('cleanupWorking');syncQuickCleanupActions();
+        try{
+          const bytes=await buildCleanedOfficeBytes(inputFile,before,targets,generation);if(generation!==sourceGeneration)return;
+          const nextBlob=new Blob([bytes],{type:inputFile.type||'application/octet-stream'});let after=null,reinspectionError=null;
+          try{const cleanedFile=new File([bytes],outputFilename(inputFile.name),{type:inputFile.type||'application/octet-stream',lastModified:Date.now()});
+            after=await inspectOfficeFile(cleanedFile,generation,false);if(generation!==sourceGeneration)return;validateCleanupReinspection(before,after,targets);
+          }catch(error){if(generation!==sourceGeneration||error?.code==='stale')throw new AppError('stale');if(error?.code==='cleanupVerification')throw error;after=null;reinspectionError=error;console.error('Post-cleanup reinspection failed',error);}
+          if(generation!==sourceGeneration)return;
+          const nextUrl=URL.createObjectURL(nextBlob);
+          releaseCleanupOutput();cleanupSelectedTargetsSnapshot=targets.slice();cleanupFilename=nextFilename;cleanupBlob=nextBlob;cleanupBlobUrl=nextUrl;cleanupAfterResult=after;cleanupReinspectionError=reinspectionError;
+          renderCleanupCompletion();if(draft!==null)$('#cleanupFilenameInput').value=draft;scrollToCleanupCompletion();AppToast.show({message:translate(cleanupReinspectionError?'cleanupPartialTitle':'cleanupCreatedToast'),tone:cleanupReinspectionError?'warning':'success'});announce(translate(cleanupReinspectionError?'cleanupPartialTitle':'cleanupCreatedToast'));
+        }catch(error){if(generation===sourceGeneration&&error?.code!=='stale'){if(!cleanupBlob)cleanupVerificationFailed=error?.code==='cleanupVerification';operationErrorKey='cleanupRetry';operationErrorDetail=error?.message||String(error);AppToast.show({message:translate('cleanupFailed'),tone:'warning'});console.error(error);}}
+        finally{if(generation===sourceGeneration){cleanupBusy=false;button.textContent=translate('createCleaned');updateCleanupSelection(false);syncInspectionReport();updateConventionState();}}
       }
       function downloadCleanedCopy() {
-        if (!cleanupBlobUrl || !cleanupBlob || !cleanupFilename) return; const filename=editedCleanupFilename(); cleanupFilename=filename; const filenamePartsValue=filenameParts(filename); $('#cleanupFilenameInput').value=filenamePartsValue.stem; $('#cleanupFilenameExtension').textContent=filenamePartsValue.extension; const anchor=document.createElement('a'); anchor.href=cleanupBlobUrl; anchor.download=filename; document.body.append(anchor); anchor.click(); anchor.remove(); const message=formatTemplate(translate('cleanupSaveStarted'),{name:filename}); $('#cleanupSaveStatus').textContent=message; AppToast.show({message,tone:'success'}); announce(message);
+        if(cleanupBusy||!cleanupBlobUrl||!cleanupBlob||!cleanupFilename)return;
+        const filename=editedCleanupFilename(),anchor=document.createElement('a');
+        try{anchor.href=cleanupBlobUrl;anchor.download=filename;document.body.append(anchor);anchor.click();
+          cleanupFilename=filename;const parts=filenameParts(filename);$('#cleanupFilenameInput').value=parts.stem;$('#cleanupFilenameExtension').textContent=parts.extension;
+          cleanupSaveNotice={key:'cleanupSaveStarted',values:{name:filename}};operationErrorKey='';operationErrorDetail='';
+          const message=formatTemplate(translate(cleanupSaveNotice.key),cleanupSaveNotice.values);updateConventionState();AppToast.show({message,tone:'success'});announce(message);
+        }catch(error){operationErrorKey='cleanupSaveFailed';operationErrorDetail=error?.message||String(error);updateConventionState();}
+        finally{anchor.remove();}
       }
 
       function readFileAsBytes(file, generation, reportProgress = true) {
@@ -2025,12 +2075,12 @@
         if (options.preserveCleanupOutput && cleanupBlob) renderCleanupCompletion();
         syncInspectionReport();
       }
-      function setProgress(percent, phaseKey) { const value = Math.max(0, Math.min(100, percent)); $('#progressBar').style.width = `${value}%`; $('#loadingPercent').textContent = `${Math.round(value)}%`; $('#loadingPhase').textContent = translate(phaseKey); }
-      function showOnly(state) {
+      function setProgress(percent, phaseKey) { loadingPhaseKey=phaseKey; const value = Math.max(0, Math.min(100, percent)); $('#progressBar').style.width = `${value}%`; $('#loadingPercent').textContent = `${Math.round(value)}%`; $('#loadingPhase').textContent = translate(phaseKey); }
+      function showOnly(state) {uiPhase=state;
         $('#reportSection').hidden = state !== 'result';
         reportReadyGeneration = state === 'result' && currentResult ? sourceGeneration : -1;
         syncInspectionReport();
-        $('#emptyState').hidden = state !== 'empty'; $('#loadingState').hidden = state !== 'loading'; $('#resultState').hidden = state !== 'result'; $('#packageSection').hidden = state !== 'result' || !currentResult || packageFindingCount(currentResult)===0; $('#reviewSection').hidden = state !== 'result'; $('#documentSection').hidden = state !== 'result'; $('#customSection').hidden = state !== 'result'; $('#docxSection').hidden = state !== 'result' || currentResult?.file?.format !== 'docx'; $('#xlsxSection').hidden = state !== 'result' || currentResult?.file?.format !== 'xlsx'; $('#pptxSection').hidden = state !== 'result' || currentResult?.file?.format !== 'pptx'; $('#cleanupSection').hidden = state !== 'result'; $('#technicalSection').hidden = state !== 'result'; $('#errorState').hidden = state !== 'error'; document.body.classList.toggle('result-active', state === 'result'); $('#mobileResultActions').hidden = state !== 'result'; if (state === 'result') syncQuickCleanupActions();
+        $('#emptyState').hidden = state !== 'empty'; $('#loadingState').hidden = state !== 'loading'; $('#resultState').hidden = state !== 'result'; $('#packageSection').hidden = state !== 'result' || !currentResult || packageFindingCount(currentResult)===0; $('#reviewSection').hidden = state !== 'result'; $('#documentSection').hidden = state !== 'result'; $('#customSection').hidden = state !== 'result'; $('#docxSection').hidden = state !== 'result' || currentResult?.file?.format !== 'docx'; $('#xlsxSection').hidden = state !== 'result' || currentResult?.file?.format !== 'xlsx'; $('#pptxSection').hidden = state !== 'result' || currentResult?.file?.format !== 'pptx'; $('#cleanupSection').hidden = state !== 'result'; $('#technicalSection').hidden = state !== 'result'; $('#errorState').hidden = state !== 'error'; document.body.classList.toggle('result-active', state === 'result'); $('#mobileResultActions').hidden = state !== 'result'; if (state === 'result') syncQuickCleanupActions();updateConventionState();
       }
       function renderError(code, details = '') {
         const map = { notOffice:['errorNotOfficeTitle','errorNotOfficeBody'], broken:['errorBrokenTitle','errorBrokenBody'], encrypted:['errorEncryptedTitle','errorEncryptedBody'], macro:['errorMacroTitle','errorMacroBody'], browser:['errorBrowserTitle','errorBrowserBody'], tooLarge:['errorTooLargeTitle','errorTooLargeBody'] };
@@ -2039,7 +2089,7 @@
       }
       async function inspectSelectedFile(file) {
         if (!file) return;
-        cancelActiveRead(); releaseCleanupOutput(); resetInspectionReport(); cleanupBusy = false; AppToast.dismiss();
+        cancelActiveRead(); releaseCleanupOutput(); resetInspectionReport(); cleanupBusy = false;operationErrorKey='';operationErrorDetail='';AppToast.dismiss();
         currentFile = file; currentResult = null; const generation = ++sourceGeneration; showOnly('loading'); setProgress(2, 'loadingRead'); announce(translate('loadingTitle'));
         try {
           const result = await inspectOfficeFile(file, generation); if (generation !== sourceGeneration) return; currentResult = result; renderResult(result); showOnly('result'); AppToast.show({ message: translate('loadedToast'), tone: 'success' }); announce(translate('loadedToast'));
@@ -2050,14 +2100,16 @@
         }
       }
       async function resetApp(withConfirm = true) {
+        if(withConfirm&&cleanupBusy)return;
+        const generation=sourceGeneration;
         if (withConfirm && (currentFile || currentResult)) {
-          const approved = await AppConfirm.ask({ title: translate('resetConfirmTitle'), message: translate('resetConfirmBody'), confirmLabel: translate('resetConfirmAction'), cancelLabel: translate('cancel'), tone: 'danger' });
-          if (!approved) return;
+          const approved = await AppConfirm.ask({titleKey:'resetConfirmTitle',messageKey:'resetConfirmBody',confirmLabelKey:'resetConfirmAction',values:{name:currentFile?.name||''},tone:'danger'});
+          if (!approved || generation!==sourceGeneration || cleanupBusy) return;
         }
-        ++sourceGeneration; cancelActiveRead(); releaseCleanupOutput(); resetInspectionReport(); cleanupBusy = false; currentFile = null; currentResult = null; $('#fileInput').value = ''; $('#errorState').dataset.errorCode = ''; setProgress(0, 'loadingRead'); showOnly('empty'); AppToast.show({ message: translate('resetToast') }); announce(translate('resetToast')); $('#pickFileButton').focus({ preventScroll: true });
+        ++sourceGeneration; cancelActiveRead(); releaseCleanupOutput(); resetInspectionReport(); cleanupBusy = false;operationErrorKey='';operationErrorDetail=''; currentFile = null; currentResult = null; $('#fileInput').value = ''; $('#errorState').dataset.errorCode = ''; setProgress(0, 'loadingRead'); showOnly('empty'); AppToast.show({ message: translate('resetToast') }); announce(translate('resetToast')); $('#pickFileButton').focus({ preventScroll: true });
       }
-      function openPicker() { const input = $('#fileInput'); input.value = ''; input.click(); }
-      function handleFiles(files) { const file = files?.[0]; if (file) inspectSelectedFile(file); }
+      function openPicker() {if(cleanupBusy)return; const input = $('#fileInput'); input.value = ''; input.click(); }
+      async function handleFiles(files) {const file=files?.[0];if(!file||cleanupBusy)return;const generation=sourceGeneration;if(currentFile||currentResult){const approved=await AppConfirm.ask({titleKey:'replaceConfirmTitle',messageKey:'replaceConfirmBody',confirmLabelKey:'replaceConfirmAction',values:{name:currentFile?.name||''},tone:'danger'});if(!approved||generation!==sourceGeneration)return;}return inspectSelectedFile(file);}
 
       $('#pickFileButton').addEventListener('click', openPicker); $('#chooseAnotherButton').addEventListener('click', openPicker); $('#retryButton').addEventListener('click', openPicker);
       $('#fileInput').addEventListener('change', event => handleFiles(event.target.files));
@@ -2075,7 +2127,7 @@
       dropZone.addEventListener('drop', event => handleFiles(event.dataTransfer?.files));
       dropZone.addEventListener('keydown', event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openPicker(); } });
       document.addEventListener('dragover', event => event.preventDefault()); document.addEventListener('drop', event => { if (!dropZone.contains(event.target)) event.preventDefault(); });
-      $('#languageButton').addEventListener('click', () => { language = language === 'ja' ? 'en' : 'ja'; writeStorage(storageKeys.language, language); applyLanguage(); });
+      $('#languageButton').addEventListener('click', () => {const choice=BrowserKittyUI.chooseLanguage(language==='ja'?'en':'ja');language=choice.language;languageSessionOnly=!choice.persisted;applyLanguage();});
       window.addEventListener('pagehide', () => { cancelActiveRead(); releaseCleanupOutput(); });
       const helpDialog = $('#helpDialog'); $('#helpButton').addEventListener('click', () => helpDialog.showModal()); $('#closeHelpButton').addEventListener('click', () => helpDialog.close()); helpDialog.addEventListener('click', event => { if (event.target !== helpDialog) return; const rect = helpDialog.getBoundingClientRect(); if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) helpDialog.close(); });
 
