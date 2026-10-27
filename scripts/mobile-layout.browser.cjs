@@ -102,6 +102,7 @@ async function main() {
         await page.evaluate(() => scrollTo({left:0,top:0,behavior:'instant'})); await settle(page);
         assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), label + ': page width');
         await auditHeader(page, label);
+        if (file === 'dist/index.html' && [320,360,390,1360].includes(width)) await page.screenshot({path:path.join(evidence, `${language}-${width}-main.png`)});
         await page.locator('#helpButton').click();
         const visibleHelpText = await page.locator('#helpDialog').innerText();
         assert.doesNotMatch(visibleHelpText, /(?:EN\s*\/\s*JA|JA\s*[\/／]\s*EN|ヘッダーのEN|Use EN in the header)/, label + ': redundant language instructions removed');
