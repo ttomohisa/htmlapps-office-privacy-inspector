@@ -35,12 +35,41 @@ async function metadata(page, rendered) {
     }
   } else assert.match(await page.locator('#dependencyCount').textContent(), /^\d+$/);
 }
+// Check rendered geometry, including clipping by an ancestor (isVisible alone misses it).
+async function auditHeader(page, label) {
+  const badge = page.locator('header #versionBadge');
+  assert.equal(await badge.textContent(), 'v' + require('../app.config.json').version, label + ': current header version');
+  assert.equal(await badge.isVisible(), true, label + ': version visible');
+  const clipped = await badge.evaluate(el => {
+    const r = el.getBoundingClientRect(), problems = [];
+    if (r.width <= 0 || r.height <= 0 || r.left < -1 || r.right > innerWidth + 1 || r.top < -1 || r.bottom > innerHeight + 1) problems.push('outside viewport');
+    if (el.scrollWidth > el.clientWidth + 1) problems.push('version text clipped');
+    for (let p = el.parentElement; p; p = p.parentElement) {
+      const s = getComputedStyle(p), b = p.getBoundingClientRect();
+      if (/hidden|clip|auto|scroll/.test(s.overflowX) && (r.left < b.left - 1 || r.right > b.right + 1)) problems.push('ancestor clips x: ' + p.className);
+      if (/hidden|clip|auto|scroll/.test(s.overflowY) && (r.top < b.top - 1 || r.bottom > b.bottom + 1)) problems.push('ancestor clips y: ' + p.className);
+    }
+    return problems;
+  });
+  assert.deepEqual(clipped, [], label + ': complete header version remains readable');
+  const help = page.locator('#helpButton svg');
+  assert.equal(await help.isVisible(), true, label + ': Help icon visible');
+  assert.ok(await help.evaluate(svg => {
+    const paths = [...svg.querySelectorAll('path')], shape = paths.map(p => p.getAttribute('d')).join(' ');
+    return /[aAcC]/.test(shape) && paths.some(p => /[hH]\.01/.test(p.getAttribute('d')) && getComputedStyle(p).strokeLinecap === 'round') && svg.getBBox().width > 0;
+  }), label + ': question-mark curve and painted dot, not information icon');
+  const shield = page.locator('.local-badge svg');
+  if (await shield.count()) {
+    assert.ok(await shield.evaluate(svg => [...svg.querySelectorAll('path')].some(p => /^M12 3 5 6/.test(p.getAttribute('d')))), label + ': local-processing shield');
+  }
+}
+
 async function main() {
   fs.mkdirSync(evidence, { recursive: true });
   const browser = await chromium.launch();
   try {
     const cases = [];
-    for (const language of ['ja', 'en']) for (const [width, height] of [[1360,900], [cfg.bp+1,568], [cfg.bp,568], [320,568], [393,252]]) cases.push({ file:'dist/index.html', language, width, height });
+    for (const language of ['ja', 'en']) for (const [width, height] of [[1360,900], [cfg.bp+1,568], [cfg.bp,568], [320,568], [360,640], [390,844], [393,252]]) cases.push({ file:'dist/index.html', language, width, height });
     cases.push({file:'dist/index.self-extract.html',language:'en',width:360,height:640}, {file:cfg.slug+'.html',language:'ja',width:1360,height:900});
     if (cfg.slug === 'ffmpeg-filter-builder') cases.push({file:'dist/index.mt.html',language:'en',width:320,height:568}, {file:cfg.slug+'.mt.html',language:'ja',width:1360,height:900});
     for (const {file, language, width, height} of cases) {
@@ -72,7 +101,12 @@ async function main() {
         }
         await page.evaluate(() => scrollTo({left:0,top:0,behavior:'instant'})); await settle(page);
         assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), label + ': page width');
+        await auditHeader(page, label);
+        if (file === 'dist/index.html' && [320,360,390,1360].includes(width)) await page.screenshot({path:path.join(evidence, `${language}-${width}-main.png`)});
         await page.locator('#helpButton').click();
+        const visibleHelpText = await page.locator('#helpDialog').innerText();
+        assert.doesNotMatch(visibleHelpText, /(?:EN\s*\/\s*JA|JA\s*[\/／]\s*EN|ヘッダーのEN|Use EN in the header)/, label + ': redundant language instructions removed');
+
         const body = page.locator(cfg.body), details = page.locator(cfg.details);
         await metadata(page, rendered);
         assert.ok(await body.evaluate(e => e.lastElementChild.classList.contains('help-build')), label + ': final Help child');
