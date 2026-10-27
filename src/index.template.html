@@ -1768,7 +1768,7 @@
           const nextBlob=new Blob([bytes],{type:inputFile.type||'application/octet-stream'});let after=null,reinspectionError=null;
           try{const cleanedFile=new File([bytes],outputFilename(inputFile.name),{type:inputFile.type||'application/octet-stream',lastModified:Date.now()});
             after=await inspectOfficeFile(cleanedFile,generation,false);if(generation!==sourceGeneration)return;validateCleanupReinspection(before,after,targets);
-          }catch(error){if(generation!==sourceGeneration||error?.code==='stale')throw new AppError('stale');if(error?.code==='cleanupVerification')throw error;after=null;reinspectionError=error;console.error('Post-cleanup reinspection failed',error);}
+          }catch(error){if(generation!==sourceGeneration||error?.code==='stale')throw new AppError('stale');if(error?.code==='cleanupVerification')throw error;if(cleanupBlob&&cleanupAfterResult&&!cleanupReinspectionError&&!cleanupVerificationFailed)throw error;after=null;reinspectionError=error;console.error('Post-cleanup reinspection failed',error);}
           if(generation!==sourceGeneration)return;
           const nextUrl=URL.createObjectURL(nextBlob);
           releaseCleanupOutput();cleanupSelectedTargetsSnapshot=targets.slice();cleanupFilename=nextFilename;cleanupBlob=nextBlob;cleanupBlobUrl=nextUrl;cleanupAfterResult=after;cleanupReinspectionError=reinspectionError;

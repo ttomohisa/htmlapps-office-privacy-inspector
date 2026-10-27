@@ -8,6 +8,8 @@
 
 ## Unreleased
 
+- Retain the verified Office copy when retry reinspection cannot decode the new copy; keep the retry error visible and preserve first-attempt partial/unknown output behavior.
+
 - Hide the informational footer at 720px and below without hiding functional mobile controls; move existing build information to the quiet end of Help and preserve keyboard disclosure activation.
 
 - Clarify Japanese and English help by removing internal layout, implementation, and audit commentary while preserving usage guidance and cautions.

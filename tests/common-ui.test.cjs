@@ -58,3 +58,27 @@ test('pending discard for source A cannot discard a newer source B',async t=>{
  await a.api.inspectSelectedFile(a.file('clean.xlsx'));q(a,'appConfirmOk').click();await pending;
  assert.equal(a.api.result.file.format,'xlsx');assert.equal(q(a,'resultState').hidden,false);
 });
+
+
+test('ordinary retry reinspection failure preserves verified Office output and current-attempt error',async t=>{
+ const a=app();t.after(a.close);await a.api.inspectSelectedFile(a.file('core-properties.docx'));await a.api.createCleanedCopy();
+ const previous=a.api.output,after=a.api.after;assert.ok(after);q(a,'cleanupFilenameInput').value=' kept / draft ';
+ const choice=a.w.document.querySelector('[data-cleanup-target]');choice.checked=!choice.checked;choice.dispatchEvent(new a.w.Event('change'));
+ a.w.console.error=()=>{};a.api.interceptInspection(async()=>{throw Error('ordinary decoder failure')});await a.api.createCleanedCopy();
+ assert.equal(a.api.output.blob,previous.blob);assert.equal(a.api.output.url,previous.url);assert.equal(a.api.after,after);
+ assert.deepEqual(a.api.output.targets,previous.targets);assert.ok(!a.revoked.includes(previous.url));assert.equal(a.blobs.size,1);
+ assert.equal(q(a,'cleanupFilenameInput').value,' kept / draft ');assert.match(q(a,'cleanupPreviousNotice').textContent,/Previous result/);
+ assert.match(q(a,'operationStatus').textContent,/Could not create/);assert.match(q(a,'operationStatus').textContent,/ordinary decoder failure/);
+ q(a,'languageButton').click();assert.match(q(a,'operationStatus').textContent,/作成できません/);assert.match(q(a,'operationStatus').textContent,/ordinary decoder failure/);
+ q(a,'downloadReportButton').click();const report=JSON.parse(await a.downloads.at(-1).blob.text());assert.equal(report.cleanup.status,'verified');assert.equal(report.cleanup.after.categoryCounts.metadata,0);
+ q(a,'downloadCleanedButton').click();assert.equal(a.downloads.at(-1).blob,previous.blob);assert.equal(a.downloads.at(-1).filename,'kept - draft.docx');
+});
+
+test('first cleanup ordinary reinspection failure still offers partial Office output with unknown after counts',async t=>{
+ const a=app();t.after(a.close);await a.api.inspectSelectedFile(a.file('core-properties.docx'));
+ a.w.console.error=()=>{};a.api.interceptInspection(async()=>{throw Error('first decoder failure')});await a.api.createCleanedCopy();
+ assert.ok(a.api.output.blob);assert.ok(a.api.output.url);assert.equal(a.api.after,null);assert.equal(q(a,'cleanupReinspectionWarning').hidden,false);
+ assert.equal(q(a,'downloadCleanedButton').disabled,false);assert.equal(a.revoked.length,0);assert.equal(q(a,'operationStatus').textContent,'');
+ q(a,'downloadReportButton').click();const report=JSON.parse(await a.downloads.at(-1).blob.text());assert.equal(report.cleanup.status,'reinspection_failed');assert.equal(report.cleanup.after,null);
+ assert.ok(!JSON.stringify(report).includes('first decoder failure'));q(a,'downloadCleanedButton').click();assert.equal(a.downloads.at(-1).blob,a.api.output.blob);
+});
