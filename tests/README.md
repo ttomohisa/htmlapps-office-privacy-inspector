@@ -119,3 +119,7 @@ Header regressions exercise the actual app startup and language click handler wi
 The canonical repository check requires this test and runs all `.test.cjs` and `.test.mjs` files against the source, generated readable HTML, and public root alias. Install the pinned test-only dependencies first (`npm ci --prefix tests --ignore-scripts --no-audit --no-fund`). `npm --prefix tests test` also discovers the new CJS tests; the separate icon MJS test remains included by the canonical checker.
 
 Native browser verification must separately exercise Japanese/English Help and loaded Reset at desktop and 393 × 252, final-note/action reachability through the dialog body, background-wheel isolation, Close/Cancel/Esc/backdrop/reopen, keyboard focus, and unchanged file/report outputs. Do not infer other cleanup branches from the shared-dialog tests.
+
+## v1.1.5 inspection hardening regression
+
+`inspection-hardening.test.cjs` builds temporary synthetic OOXML ZIPs from existing fixtures to cover Word inherited paragraph/character hidden text and explicit off overrides, PowerPoint picture-only notes, removal of note-only media without deleting shared slide assets, bounded deflate expansion, CRC mismatch causing partial inspection, and finding navigation into a populated Excel section. Tests run against source, readable build and committed public root. These are synthetic parser/ZIP tests, not a substitute for opening cleaned files in native Office or real-browser verification.
