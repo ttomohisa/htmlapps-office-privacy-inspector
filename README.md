@@ -27,7 +27,7 @@ Help and confirmation dialogs pause background scrolling. On short screens, scro
 - **Inspect common Office metadata** — Review Creator, Last Modified By, Company, Manager, editing time, Custom Properties, and other Core / Extended Properties.
 - **Check Word-specific information** — Find comments, tracked changes, hidden text, editing-session identifiers (RSID), external relationships, embedded objects, and Custom XML.
 - **Check Excel-specific information** — Find Hidden / Very Hidden sheets, hidden rows and columns, external references, defined names, connections, Pivot / Slicer caches, embedded objects, and macro-related package data.
-- **Check PowerPoint-specific information** — Find comments, speaker notes, hidden slides, off-slide objects, external relationships, embedded objects, Custom XML, and macro-related package data.
+- **Check PowerPoint-specific information** — Find comments, speaker notes including non-text images/shapes, hidden slides, off-slide objects, external relationships, embedded objects, Custom XML, and macro-related package data.
 - **See actual findings near the summary** — The result summary includes representative values and previews instead of showing counts alone.
 - **Clean only supported items** — Remove selected metadata, selected Custom Properties, DOCX RSID/comments, and PPTX comments/speaker notes into a new copy.
 - **Reinspect automatically** — After cleanup, compare Before / After finding counts and review anything that remains.
@@ -133,7 +133,7 @@ Cleanup is enabled only when the package passes the app's reliability checks. Su
 - DOCX editing-session identifiers (RSID)
 - All DOCX comments, including references and related comment metadata
 - All PPTX comments and comment-author metadata
-- PPTX speaker notes for selected slides or all note slides
+- PPTX speaker notes for selected slides or all note slides; media used only by removed notes is removed, while media still referenced elsewhere is retained
 
 Only XML parts that need to change are rebuilt. Unchanged ZIP entries, including media and embedded binary files, are carried over without decoding their contents for inspection. After rebuilding, the generated package is parsed again before the completion result is shown.
 
@@ -209,6 +209,7 @@ A GitHub Pages visit still requires the initial page request. To use the app wit
 - VBA / macro content and digital signatures are never rewritten; affected packages are inspection-only.
 - Complex Word style / theme interactions can contain hidden behavior that the current hidden-text inspection does not fully model.
 - Encrypted / password-protected OOXML files and legacy DOC / XLS / PPT formats are not supported.
+- ZIP parts read for inspection (such as XML) have bounded expansion and CRC-32 checks. Other images or videos are not decompressed simply to verify integrity; this is not a complete ZIP-integrity checker.
 - Large Office packages can exceed browser memory limits depending on the device.
 - The current XML inspection remains on the main thread. Long scans use cooperative yielding and stale reads are cancelled when a new file is selected or the inspection is reset.
 
