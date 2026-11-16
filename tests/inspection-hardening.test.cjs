@@ -181,3 +181,32 @@ test('ZIP rejects a local method mismatch and an oversized declared entry', asyn
   const hugeEntry = a.api.parseZipDirectory(huge).get('sample.xml');
   await assert.rejects(a.api.readZipEntry(huge, hugeEntry), error => error.code === 'tooLarge');
 });
+
+
+test('PowerPoint geometry-only note shapes are not mistaken for empty placeholders', async t => {
+  const a = app(); t.after(a.close);
+  const parts = await fixtureParts(a, 'speaker-notes.pptx');
+  const original = await a.api.inspectOfficeFile(a.file('original.pptx', makeZip(parts)), a.api.generation, false);
+  const part = original.pptx.notes[0].part;
+  let xml = parts.get(part).toString('utf8').replace(/(<(?:\w+:)?t>)[\s\S]*?(<\/(?:\w+:)?t>)/g, '$1$2');
+  const spTree = xml.match(/<\/((?:\w+:)?)spTree>/); assert.ok(spTree);
+  xml = xml.replace(spTree[0], '<' + spTree[1] + 'sp><' + spTree[1] + 'spPr/></' + spTree[1] + 'sp>' + spTree[0]);
+  putText(parts, part, xml);
+  const report = await a.api.inspectOfficeFile(a.file('shape-only-note.pptx', makeZip(parts)), a.api.generation, false);
+  assert.ok(report.pptx.notes.some(note => note.part === part && note.text === ''));
+});
+
+test('Word document-wide hidden default style respects direct reveal formatting', async t => {
+  const a = app(); t.after(a.close);
+  const parts = await fixtureParts(a, 'clean.docx');
+  const ns = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main';
+  putText(parts, 'word/styles.xml', '<?xml version="1.0"?><w:styles xmlns:w="' + ns + '"><w:docDefaults><w:rPrDefault><w:rPr><w:vanish/></w:rPr></w:rPrDefault></w:docDefaults></w:styles>');
+  const xml = parts.get('word/document.xml').toString('utf8');
+  const paragraph = '<w:p xmlns:w="' + ns + '"><w:r><w:t>HIDDEN_BY_DEFAULT</w:t></w:r>' +
+    '<w:r><w:rPr><w:vanish w:val="0"/></w:rPr><w:t>VISIBLE_BY_OVERRIDE</w:t></w:r></w:p>';
+  putText(parts, 'word/document.xml', xml.replace(/<\/(?:\w+:)?body>/, paragraph + '$&'));
+  const result = await a.api.inspectOfficeFile(a.file('default-hidden.docx', makeZip(parts)), a.api.generation, false);
+  const hidden = result.docx.hiddenText.map(item => item.text).join('\n');
+  assert.match(hidden, /HIDDEN_BY_DEFAULT/);
+  assert.doesNotMatch(hidden, /VISIBLE_BY_OVERRIDE/);
+});
