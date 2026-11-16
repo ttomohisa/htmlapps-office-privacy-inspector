@@ -85,7 +85,8 @@ async function main() {
         await page.waitForFunction(() => /^\d+\.\d+\.\d+$/.test(document.querySelector('#buildVersion').textContent));
         if (await page.locator('html').getAttribute('lang') !== language) await page.locator('#languageButton').click();
         assert.equal((await page.locator('[data-i18n="localBadge"]').textContent()).trim(), language === 'ja' ? '完全ローカル処理' : 'Fully local processing');
-        await bounds(page.locator('.local-badge'), width, height, label, false);
+        assert.equal(await page.locator('.local-badge').isVisible(), width > cfg.bp, label + ': local-processing badge visibility');
+        if (width > cfg.bp) await bounds(page.locator('.local-badge'), width, height, label, false);
         assert.equal(await page.locator('body > footer').isVisible(), width > cfg.bp, label + ': initial footer');
         assert.equal(await page.locator(cfg.nav).isVisible(),false,'no document yet');
         // Four-entry stored DOCX built solely from synthetic XML for this regression.
@@ -96,6 +97,7 @@ async function main() {
         for (const w of [cfg.bp+1, cfg.bp, width]) {
           await page.setViewportSize({width:w,height}); await settle(page);
           assert.equal(await page.locator('body > footer').isVisible(), w > cfg.bp, label + ': footer resize');
+          assert.equal(await page.locator('.local-badge').isVisible(), w > cfg.bp, label + ': processing badge resize');
           assert.equal(await page.locator(cfg.nav).isVisible(), w <= cfg.bp, label + ': functional bar');
           if (w <= cfg.bp) await bounds(page.locator(cfg.nav), w, height, label);
         }
