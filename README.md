@@ -219,6 +219,12 @@ Office Privacy Inspector v1.0.0 bundles **no third-party runtime library code**.
 
 See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for details.
 
+## Releases
+
+When a PR is merged into `main`, the `Create version tag and GitHub Release` workflow verifies the standalone build and regression tests, then creates a tag from the version in `app.config.json` (for example, `v1.1.5`). It publishes a GitHub Release with standalone and self-extract HTML assets.
+
+The workflow does not move an existing tag or create a duplicate release for an existing version. Bump `app.config.json` to the next semantic version before merging a subsequent release. GitHub Pages deployment runs independently.
+
 ## Contributing
 
 Bug reports and feature proposals are welcome through GitHub Issues. See [CONTRIBUTING.md](CONTRIBUTING.md) for development guidance.
