@@ -899,29 +899,54 @@
         Object.defineProperty(entries, 'zipMeta', { value: { centralOffset, centralSize, eocdOffset, comment: new Uint8Array(bytes.subarray(eocdOffset + 22, eocdOffset + 22 + zipCommentLength)) }, enumerable: false });
         return entries;
       }
-      async function inflateRaw(compressed, expectedSize) {
+      const MAX_XML_ENTRY_BYTES = 128 * 1024 * 1024;
+      async function inflateRaw(compressed, expectedSize, maxBytes = MAX_XML_ENTRY_BYTES) {
         if (typeof DecompressionStream !== 'function') throw new AppError('browser');
-        let stream;
-        try { stream = new Blob([compressed]).stream().pipeThrough(new DecompressionStream('deflate-raw')); }
+        let reader;
+        try { reader = new Blob([compressed]).stream().pipeThrough(new DecompressionStream('deflate-raw')).getReader(); }
         catch (error) { throw new AppError('browser', error?.message || String(error)); }
-        const output = new Uint8Array(await new Response(stream).arrayBuffer());
-        if (Number.isFinite(expectedSize) && expectedSize >= 0 && output.byteLength !== expectedSize) throw new AppError('broken', `ZIP entry size mismatch: expected ${expectedSize}, got ${output.byteLength}.`);
-        return output;
+        const chunks = []; let total = 0;
+        try {
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            total += value.byteLength;
+            if (total > maxBytes) {
+              reader.cancel().catch(() => {});
+              throw new AppError('tooLarge', 'A ZIP part exceeds the safe decompression limit.');
+            }
+            chunks.push(value);
+          }
+        } catch (error) {
+          if (error?.code === 'tooLarge') throw error;
+          throw new AppError('broken', error?.message || String(error));
+        } finally { try { reader.releaseLock(); } catch {} }
+        if (Number.isFinite(expectedSize) && expectedSize >= 0 && total !== expectedSize) throw new AppError('broken', `ZIP entry size mismatch: expected ${expectedSize}, got ${total}.`);
+        return concatBytes(chunks);
       }
       async function readZipEntry(bytes, entry) {
         const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength); const offset = entry.localOffset;
         if (offset + 30 > bytes.byteLength || u32(view, offset) !== 0x04034b50) throw new AppError('broken');
-        const nameLength = u16(view, offset + 26); const extraLength = u16(view, offset + 28); const dataStart = offset + 30 + nameLength + extraLength; const dataEnd = dataStart + entry.compressedSize;
-        if (dataEnd > bytes.byteLength) throw new AppError('broken');
+        const flags = u16(view, offset + 6); const method = u16(view, offset + 8);
+        const nameLength = u16(view, offset + 26); const extraLength = u16(view, offset + 28);
+        const dataStart = offset + 30 + nameLength + extraLength; const dataEnd = dataStart + entry.compressedSize;
+        if (dataEnd > bytes.byteLength || dataEnd > entry.localEnd || flags !== entry.flags || method !== entry.method) throw new AppError('broken');
+        if (entry.uncompressedSize > MAX_XML_ENTRY_BYTES) throw new AppError('tooLarge');
         const compressed = bytes.subarray(dataStart, dataEnd);
-        if (entry.method === 0) return new Uint8Array(compressed);
-        if (entry.method === 8) return await inflateRaw(compressed, entry.uncompressedSize);
-        throw new AppError('broken', `Unsupported ZIP compression method: ${entry.method}.`);
+        let output;
+        if (entry.method === 0) {
+          if (entry.compressedSize !== entry.uncompressedSize) throw new AppError('broken');
+          output = new Uint8Array(compressed);
+        } else if (entry.method === 8) {
+          output = await inflateRaw(compressed, entry.uncompressedSize);
+        } else throw new AppError('broken', `Unsupported ZIP compression method: ${entry.method}.`);
+        if (crc32Bytes(output) !== entry.crc32) throw new AppError('broken', `ZIP part checksum mismatch: ${entry.name}.`);
+        return output;
       }
       async function readZipText(bytes, entries, path, required = false) {
         const entry = entries.get(path);
         if (!entry) { if (required) throw new AppError('broken', `Missing required Office part: ${path}`); return ''; }
-        if (entry.uncompressedSize > 128 * 1024 * 1024) throw new AppError('tooLarge', `XML/text part is too large to inspect safely in this browser: ${path} (${entry.uncompressedSize} bytes).`);
+        if (entry.uncompressedSize > MAX_XML_ENTRY_BYTES) throw new AppError('tooLarge', `XML/text part is too large to inspect safely in this browser: ${path} (${entry.uncompressedSize} bytes).`);
         const data = await readZipEntry(bytes, entry);
         return new TextDecoder('utf-8', { fatal: false }).decode(data);
       }
@@ -1040,26 +1065,46 @@
         const readXmlPart = async (path, required = false) => safeReadXmlPart(bytes, entries, path, failures, { required });
 
         if (!entries.has('word/document.xml')) recordPartialFailure(failures, 'word/document.xml', new AppError('broken', 'Missing required Word document part.'));
-        const hiddenCharacterStyles = new Set();
+        // Hidden text can be inherited from document defaults, paragraph and character styles.
         const stylesDoc = await readXmlPart('word/styles.xml');
+        const styleMap = new Map();
+        const defaultStyles = { paragraph:'', character:'' };
+        const hiddenSetting = rPr => {
+          if (!rPr) return null;
+          const vanish = childElements(rPr).find(node => (node.localName || node.nodeName.split(':').pop()) === 'vanish');
+          return vanish ? wordOnOffEnabled(vanish) : null;
+        };
+        const directChild = (parent, name) => childElements(parent).find(node => (node.localName || node.nodeName.split(':').pop()) === name) || null;
+        let defaultRunHidden = false;
         if (stylesDoc) {
-          const styleMap = new Map();
+          const defaults = Array.from(stylesDoc.getElementsByTagNameNS('*', 'rPrDefault'))[0] || null;
+          defaultRunHidden = hiddenSetting(directChild(defaults, 'rPr')) ?? false;
           for (const style of Array.from(stylesDoc.getElementsByTagNameNS('*', 'style'))) {
-            const styleId = attrByLocalName(style, 'styleId');
+            const id = attrByLocalName(style, 'styleId');
             const type = attrByLocalName(style, 'type');
-            if (!styleId || type !== 'character') continue;
-            const rPr = childElements(style).find(child => (child.localName || child.nodeName.split(':').pop()) === 'rPr');
-            const basedOn = Array.from(style.getElementsByTagNameNS('*', 'basedOn'))[0] || null;
-            const vanishElement = rPr ? Array.from(rPr.getElementsByTagNameNS('*', 'vanish'))[0] : null;
-            styleMap.set(styleId, { hidden: wordOnOffEnabled(vanishElement), basedOn: attrByLocalName(basedOn, 'val') });
+            if (!id || !['paragraph','character'].includes(type)) continue;
+            const info = {
+              type,
+              basedOn:attrByLocalName(directChild(style, 'basedOn'), 'val'),
+              hidden:hiddenSetting(directChild(style, 'rPr'))
+            };
+            styleMap.set(id, info);
+            if (wordOnOffEnabled(style) && attrByLocalName(style,'default') === '1') defaultStyles[type] = id;
           }
-          const resolvesHidden = (styleId, seen = new Set()) => {
-            if (!styleId || seen.has(styleId)) return false;
-            seen.add(styleId); const info = styleMap.get(styleId); if (!info) return false;
-            return info.hidden || resolvesHidden(info.basedOn, seen);
-          };
-          for (const styleId of styleMap.keys()) if (resolvesHidden(styleId)) hiddenCharacterStyles.add(styleId);
         }
+        const effectiveStyleHidden = (id, seen = new Set()) => {
+          if (!id || seen.has(id)) return null;
+          seen.add(id);
+          const style = styleMap.get(id);
+          if (!style) return null;
+          const inherited = effectiveStyleHidden(style.basedOn, seen);
+          return style.hidden === null ? inherited : style.hidden;
+        };
+        const hiddenParagraphStyle = paragraph => {
+          const pPr = directChild(paragraph, 'pPr');
+          const id = attrByLocalName(directChild(pPr, 'pStyle'), 'val') || defaultStyles.paragraph;
+          return effectiveStyleHidden(id);
+        };
 
         const commentsDoc = await readXmlPart('word/comments.xml');
         if (commentsDoc) {
@@ -1095,12 +1140,15 @@
             }
           }
           for (const run of Array.from(doc.getElementsByTagNameNS('*', 'r'))) {
-            const rPr = childElements(run).find(child => (child.localName || child.nodeName.split(':').pop()) === 'rPr');
-            const vanishElement = rPr ? Array.from(rPr.getElementsByTagNameNS('*', 'vanish'))[0] : null;
-            const vanish = wordOnOffEnabled(vanishElement);
-            const rStyle = rPr ? Array.from(rPr.getElementsByTagNameNS('*', 'rStyle'))[0] : null;
-            const hiddenByStyle = Boolean(rStyle && hiddenCharacterStyles.has(attrByLocalName(rStyle, 'val')));
-            if (!vanish && !hiddenByStyle) continue;
+            const rPr = directChild(run, 'rPr');
+            const directHidden = hiddenSetting(rPr);
+            const rStyleId = attrByLocalName(directChild(rPr, 'rStyle'), 'val') || defaultStyles.character;
+            const characterHidden = effectiveStyleHidden(rStyleId);
+            let paragraph = run.parentNode;
+            while (paragraph && paragraph.nodeType === 1 && paragraph.localName !== 'p') paragraph = paragraph.parentNode;
+            const paragraphHidden = hiddenParagraphStyle(paragraph);
+            const hidden = directHidden ?? characterHidden ?? paragraphHidden ?? defaultRunHidden;
+            if (!hidden) continue;
             const text = textFromWordNode(run);
             if (text) result.hiddenText.push({ part: path, text, characters: Array.from(text).length });
           }
@@ -1362,7 +1410,18 @@
             if ((rel.getAttribute('TargetMode') || '').toLowerCase() === 'external') continue;
             const relatedPath = normalizePackagePath(slide.path, target);
             if (/\/notesSlide$/i.test(type) && entries.has(relatedPath)) {
-              const notesDoc = await readXmlPart(relatedPath); const text = pptNotesText(notesDoc); if (text) result.notes.push({ slide:slide.number, title, text, characters:Array.from(text).length, part:relatedPath });
+              const notesDoc = await readXmlPart(relatedPath);
+              if (!notesDoc) continue;
+              const text = pptNotesText(notesDoc);
+              const noteRelsPath = relsPathForPart(relatedPath);
+              const noteRels = entries.has(noteRelsPath) ? await readXmlPart(noteRelsPath) : null;
+              const noteMedia = noteRels ? Array.from(noteRels.getElementsByTagNameNS('*','Relationship'))
+                .filter(item => (item.getAttribute('TargetMode') || '').toLowerCase() !== 'external')
+                .map(item => normalizePackagePath(relatedPath, item.getAttribute('Target') || ''))
+                .filter(path => /^ppt\/(media|embeddings)\//i.test(path)) : [];
+              const hasVisuals = ['pic','graphicFrame','oleObj','contentPart'].some(name => notesDoc.getElementsByTagNameNS('*',name).length > 0);
+              if (text || hasVisuals || noteMedia.length) result.notes.push({ slide:slide.number, title,
+                text, characters:Array.from(text).length, part:relatedPath, mediaCount:noteMedia.length });
             }
             if (/\/comments$/i.test(type) && entries.has(relatedPath)) {
               processedCommentParts.add(relatedPath); const commentsDoc = await readXmlPart(relatedPath); if (!commentsDoc) continue;
@@ -1519,10 +1578,39 @@
 
         const selectedNoteIndexes = new Set(targets.filter(target => /^pptx:note:\d+$/.test(target)).map(target => Number(target.slice('pptx:note:'.length))).filter(Number.isInteger));
         const removeAllNotes = selected.has('pptx:notes:all');
+        const deletedNoteParts = new Set();
         if (result.file.format === 'pptx' && (removeAllNotes || selectedNoteIndexes.size)) {
-          result.pptx?.notes?.forEach((note,index) => { if (removeAllNotes || selectedNoteIndexes.has(index)) markDeleted(note.part); });
-          const remainingNotes = Math.max(0, (result.pptx?.notes?.length || 0) - new Set((result.pptx?.notes || []).map((note,index) => (removeAllNotes || selectedNoteIndexes.has(index)) ? note.part : null).filter(Boolean)).size);
+          result.pptx?.notes?.forEach((note,index) => {
+            if (removeAllNotes || selectedNoteIndexes.has(index)) { deletedNoteParts.add(note.part); markDeleted(note.part); }
+          });
+          const remainingNotes = Math.max(0, (result.pptx?.notes?.length || 0) - deletedNoteParts.size);
           await replaceXml('docProps/app.xml', doc => setElementTextByLocalName(doc, 'Notes', remainingNotes));
+        }
+        if (deletedNoteParts.size) {
+          const noteMedia = new Set();
+          for (const notePath of deletedNoteParts) {
+            const relsPath = relsPathForPart(notePath);
+            if (!entries.has(relsPath)) continue;
+            const rels = parseXml(await readZipText(bytes, entries, relsPath, true), relsPath);
+            for (const rel of Array.from(rels.getElementsByTagNameNS('*','Relationship'))) {
+              if ((rel.getAttribute('TargetMode') || '').toLowerCase() === 'external') continue;
+              const target = normalizePackagePath(notePath, rel.getAttribute('Target') || '');
+              if (/^ppt\/media\//i.test(target)) noteMedia.add(target);
+            }
+          }
+          if (noteMedia.size) {
+            for (const relsPath of Array.from(entries.keys()).filter(path => path.endsWith('.rels') && !deletions.has(path))) {
+              const relsText = readReplacementText(relsPath) ?? await readZipText(bytes, entries, relsPath, true);
+              const rels = parseXml(relsText, relsPath);
+              const source = relationshipSourcePath(relsPath);
+              for (const rel of Array.from(rels.getElementsByTagNameNS('*','Relationship'))) {
+                if ((rel.getAttribute('TargetMode') || '').toLowerCase() === 'external') continue;
+                noteMedia.delete(normalizePackagePath(source, rel.getAttribute('Target') || ''));
+              }
+              if (!noteMedia.size) break;
+            }
+            for (const mediaPath of noteMedia) markDeleted(mediaPath);
+          }
         }
 
         if (deletions.size) {
@@ -1898,7 +1986,7 @@
         return $('#documentSection');
       }
       function scrollToFindings() {
-        const section=$('#reviewSection');
+        const section=firstFindingSection();
         if (!section || section.hidden) return;
         section.scrollIntoView({ behavior:'smooth', block:'start' });
       }
