@@ -11,6 +11,13 @@
 - Scroll View findings to the first populated finding category.
 - Display non-text PowerPoint note findings in Japanese and English.
 
+### UI and release
+- Replace the introductory hero with shorter, concrete Japanese/English copy and remove the duplicate file-selection heading and explanation.
+- Replace the ambiguous upward-file arrow in the drop area with a downward arrow and tray icon.
+- Hide the informational fully-local badge on phone layouts while preserving desktop visibility and browser-local processing.
+- Remove outdated version references from the Help and format-specific descriptions without changing the cleanup limitations.
+- On `main` updates, verify build and regressions before tagging the app version and publishing a GitHub Release with standalone files. Existing versions are not duplicated or retagged.
+
 ### Other included UI updates
 - Hide the informational footer at 720px and below; move build information into the end of Help.
 - Clarify Japanese and English Help without changing the existing usage and caution content.
