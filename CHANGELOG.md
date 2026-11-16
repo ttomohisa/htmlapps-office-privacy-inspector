@@ -1,16 +1,24 @@
 # Changelog
 
+## Unreleased
+
+## [1.1.5] - 2026-11-17
+
+### Fixed
+- Detect Word hidden text inherited from document defaults, paragraph styles and character styles, while respecting explicit hidden-text overrides.
+- Detect PowerPoint speaker notes containing non-text shapes and media. Removing notes also removes note-only media; assets referenced by surviving slides or other parts are preserved.
+- Apply bounded decompression and CRC-32 verification to inspected ZIP parts. Damaged XML is treated as a partial inspection, preventing cleanup.
+- Scroll View findings to the first populated finding category.
+- Display non-text PowerPoint note findings in Japanese and English.
+
+### Other included UI updates
+- Hide the informational footer at 720px and below; move build information into the end of Help.
+- Clarify Japanese and English Help without changing the existing usage and caution content.
+
 ## 1.1.4 - 2026-10-27
 
 - Keep the header version badge visible at narrow widths by truncating only the app title.
 - Remove redundant language-switching instructions from Japanese and English Help.
-
-
-## Unreleased
-
-- Hide the informational footer at 720px and below without hiding functional mobile controls; move existing build information to the quiet end of Help and preserve keyboard disclosure activation.
-
-- Clarify Japanese and English help by removing internal layout, implementation, and audit commentary while preserving usage guidance and cautions.
 
 ## [1.1.3] - 2026-10-11
 
