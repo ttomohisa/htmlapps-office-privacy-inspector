@@ -1419,7 +1419,8 @@
                 .filter(item => (item.getAttribute('TargetMode') || '').toLowerCase() !== 'external')
                 .map(item => normalizePackagePath(relatedPath, item.getAttribute('Target') || ''))
                 .filter(path => /^ppt\/(media|embeddings)\//i.test(path)) : [];
-              const hasVisuals = ['pic','graphicFrame','oleObj','contentPart'].some(name => notesDoc.getElementsByTagNameNS('*',name).length > 0);
+              const nonPlaceholderShapes = Array.from(notesDoc.getElementsByTagNameNS('*','sp')).some(shape => !shape.getElementsByTagNameNS('*','ph').length);
+              const hasVisuals = nonPlaceholderShapes || ['pic','graphicFrame','oleObj','contentPart','cxnSp','grpSp'].some(name => notesDoc.getElementsByTagNameNS('*',name).length > 0);
               if (text || hasVisuals || noteMedia.length) result.notes.push({ slide:slide.number, title,
                 text, characters:Array.from(text).length, part:relatedPath, mediaCount:noteMedia.length });
             }
