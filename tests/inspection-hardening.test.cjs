@@ -165,3 +165,19 @@ test('View findings scrolls to actual XLSX findings rather than empty metadata',
   a.w.document.getElementById('jumpToFindingsButton').click();
   assert.equal(target, 'xlsx');
 });
+
+
+test('ZIP rejects a local method mismatch and an oversized declared entry', async t => {
+  const a = app(); t.after(a.close);
+  const parts = new Map([['sample.xml', Buffer.from('<sample/>')]]);
+  const mismatch = makeZip(parts);
+  mismatch.writeUInt16LE(8, 8); // The central directory still declares method 0.
+  const entry = a.api.parseZipDirectory(mismatch).get('sample.xml');
+  await assert.rejects(a.api.readZipEntry(mismatch, entry), error => error.code === 'broken');
+
+  const huge = makeZip(parts);
+  const index = huge.readUInt32LE(huge.length - 22 + 16);
+  huge.writeUInt32LE(128 * 1024 * 1024 + 1, index + 24);
+  const hugeEntry = a.api.parseZipDirectory(huge).get('sample.xml');
+  await assert.rejects(a.api.readZipEntry(huge, hugeEntry), error => error.code === 'tooLarge');
+});
