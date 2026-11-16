@@ -27,7 +27,7 @@ GitHub Pagesから最初のHTMLを読み込んだ後、Officeファイルの読�
 - **Officeの基本メタデータを確認** — 作成者、最終更新者、会社名、管理者名、総編集時間、Custom Propertiesなどを表示します。
 - **Word固有の情報を確認** — コメント、変更履歴、非表示テキスト、編集セッション情報（RSID）、外部Relationship、埋め込み要素、Custom XMLを検出します。
 - **Excel固有の情報を確認** — Hidden / Very Hiddenシート、非表示行列、外部参照、Defined Names、Connections、Pivot / Slicer Cache、埋め込み要素、マクロ関連package情報を検出します。
-- **PowerPoint固有の情報を確認** — コメント、文字のない画像・図形のみの発表者ノートを含むノート、非表示スライド、スライド外オブジェクト、外部Relationship、埋め込み要素、Custom XML、マクロ関連package情報を検出します。
+- **PowerPoint固有の情報を確認** — コメント、画像や図形だけのものも含む発表者ノート、非表示スライド、スライド外オブジェクト、外部Relationship、埋め込み要素、Custom XML、マクロ関連package情報を検出します。
 - **概要で実際の内容を確認** — 件数だけでなく、ファイル内で実際に見つかった値や代表的な内容を結果上部に表示します。
 - **対応項目だけをクリーンアップ** — 選択したメタデータ、Custom Properties、DOCXのRSID / コメント、PPTXのコメント / 発表者ノートを別コピーから削除できます。
 - **生成後に自動で再検査** — Before / Afterの件数と、残っている確認項目を表示します。
