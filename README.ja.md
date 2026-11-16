@@ -205,6 +205,12 @@ Office Privacy Inspector v1.0.0 は、**第三者ランタイムライブラリ�
 
 詳細は [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) を参照してください。
 
+## リリース
+
+`main` にPRがマージされると、`Create version tag and GitHub Release` ワークフローが実行されます。単一HTMLのビルドと回帰テストが成功した場合、`app.config.json` のバージョンを使って `v1.1.5` のようなタグとGitHub Releaseを作成し、通常版とself-extract版HTMLを添付します。
+
+既存のタグを書き換えたり、同じバージョンのReleaseを重複作成したりしません。次のリリースでは、マージ前に `app.config.json` を新しいSemantic Versioningのバージョンに更新してください。GitHub Pagesへの公開は別のワークフローで実施します。
+
 ## Contributing
 
 不具合報告・機能提案はGitHub Issuesで受け付けます。開発時のルールは [CONTRIBUTING.md](CONTRIBUTING.md) を参照してください。
