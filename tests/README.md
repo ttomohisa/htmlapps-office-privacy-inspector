@@ -123,3 +123,7 @@ Native browser verification must separately exercise Japanese/English Help and l
 ## v1.1.5 inspection hardening regression
 
 `inspection-hardening.test.cjs` builds temporary synthetic OOXML ZIPs from existing fixtures to cover Word inherited paragraph/character hidden text and explicit off overrides, PowerPoint picture-only notes, removal of note-only media without deleting shared slide assets, bounded deflate expansion, CRC mismatch causing partial inspection, and finding navigation into a populated Excel section. Tests run against source, readable build and committed public root. These are synthetic parser/ZIP tests, not a substitute for opening cleaned files in native Office or real-browser verification.
+
+## v1.1.5 introductory UI and release regressions
+
+`ui-copy-release.test.cjs` checks both languages, the shorter hero, absence of duplicated upload instructions, SVG drop icon, hidden mobile processing badge, version-free but accurate Help limitations, and the guarded GitHub Release workflow contract. The automatic tag and Release creation is exercised after a merge to `main`; a PR only validates the workflow's declared behavior.
