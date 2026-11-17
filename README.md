@@ -119,6 +119,10 @@ Not supported:
 | Duplicate Relationship IDs | ✓ | ✓ | ✓ | Inspection only |
 | Partial optional-part inspection failures | ✓ | ✓ | ✓ | Inspection only |
 
+### Excel notes and threaded comments
+
+The inspector detects worksheet-linked legacy cell notes and threaded comments. Findings include the sheet/cell, text, and available author details; threaded replies and timestamps are also shown. Person records linked to the workbook are used to resolve modern comment authors. This is **inspection-only**: Excel comment and person parts are not removed. Broken/missing referenced comment or person XML makes the inspection partial and blocks cleanup. The downloaded summary JSON contains counts only, never the text, authors, or original file name.
+
 ## Cleanup behavior
 
 Cleanup is enabled only when the package passes the app's reliability checks. Supported cleanup targets are:
@@ -221,7 +225,7 @@ See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for details.
 
 ## Releases
 
-When a PR is merged into `main`, the `Create version tag and GitHub Release` workflow verifies the standalone build and regression tests, then creates a tag from the version in `app.config.json` (for example, `v1.1.5`). It publishes a GitHub Release with standalone and self-extract HTML assets.
+When a PR is merged into `main`, the `Create version tag and GitHub Release` workflow verifies the standalone build and regression tests, then creates a tag from the version in `app.config.json` (for example, `v1.2.0`). It publishes a GitHub Release with standalone and self-extract HTML assets.
 
 The workflow does not move an existing tag or create a duplicate release for an existing version. Bump `app.config.json` to the next semantic version before merging a subsequent release. GitHub Pages deployment runs independently.
 
