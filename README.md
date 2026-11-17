@@ -26,7 +26,7 @@ Help and confirmation dialogs pause background scrolling. On short screens, scro
 
 - **Inspect common Office metadata** — Review Creator, Last Modified By, Company, Manager, editing time, Custom Properties, and other Core / Extended Properties.
 - **Check Word-specific information** — Find comments, tracked changes, hidden text, editing-session identifiers (RSID), external relationships, embedded objects, and Custom XML.
-- **Check Excel-specific information** — Find Hidden / Very Hidden sheets, hidden rows and columns, external references, defined names, connections, Pivot / Slicer caches, embedded objects, and macro-related package data.
+- **Check Excel-specific information** — Find legacy cell notes, threaded comments (including replies, author details and cell references), Hidden / Very Hidden sheets, hidden rows and columns, external references, defined names, connections, Pivot / Slicer caches, embedded objects, and macro-related package data.
 - **Check PowerPoint-specific information** — Find comments, speaker notes including non-text images/shapes, hidden slides, off-slide objects, external relationships, embedded objects, Custom XML, and macro-related package data.
 - **See actual findings near the summary** — The result summary includes representative values and previews instead of showing counts alone.
 - **Clean only supported items** — Remove selected metadata, selected Custom Properties, DOCX RSID/comments, and PPTX comments/speaker notes into a new copy.
@@ -95,12 +95,12 @@ Not supported:
 
 ## What it checks
 
-| Finding | DOCX | XLSX | PPTX | Cleanup in v1.0.0 |
+| Finding | DOCX | XLSX | PPTX | Cleanup |
 | --- | ---: | ---: | ---: | ---: |
 | Creator / Last Modified By / Last Printed | ✓ | ✓ | ✓ | ✓ |
 | Company / Manager / Total Editing Time | ✓ | ✓ | ✓ | ✓ |
 | Custom Properties | ✓ | ✓ | ✓ | Selected only |
-| Comments | ✓ | — | ✓ | DOCX / PPTX |
+| Comments / cell notes | ✓ | ✓ (legacy and threaded) | ✓ | DOCX / PPTX only |
 | Tracked changes | ✓ | — | — | — |
 | Hidden text | ✓ | — | — | — |
 | Editing session information (RSID) | ✓ | — | — | ✓ |
@@ -121,7 +121,7 @@ Not supported:
 
 ### Excel notes and threaded comments
 
-The inspector detects worksheet-linked legacy cell notes and threaded comments. Findings include the sheet/cell, text, and available author details; threaded replies and timestamps are also shown. Person records linked to the workbook are used to resolve modern comment authors. This is **inspection-only**: Excel comment and person parts are not removed. Broken/missing referenced comment or person XML makes the inspection partial and blocks cleanup. The downloaded summary JSON contains counts only, never the text, authors, or original file name.
+The inspector detects worksheet-linked legacy cell notes and threaded comments. Findings include the sheet/cell, text, and available author details; threaded replies and timestamps are also shown. Person records linked to the workbook are used to resolve modern comment authors. This is **inspection-only**: Excel comment and person parts are not removed. Broken/missing referenced comment or person XML makes the inspection partial and blocks cleanup. The downloaded summary JSON contains counts only, never the text, authors, or original file name. Unlinked/orphaned comment parts are not presented as worksheet comments.
 
 ## Cleanup behavior
 
@@ -208,8 +208,8 @@ A GitHub Pages visit still requires the initial page request. To use the app wit
 ## Limitations
 
 - A clean inspection result does **not** guarantee that the file contains no confidential information. Review visible document text, images, shapes, charts, white text, and image-contained text separately.
-- Tracked changes, hidden text, hidden sheets / rows / columns, external references, embedded objects, and Custom XML are detected but not automatically removed in v1.0.0.
-- Excel comments / threaded comments are not deeply inspected or cleaned in v1.0.0.
+- Tracked changes, hidden text, hidden sheets / rows / columns, external references, embedded objects, and Custom XML are detected but not automatically removed.
+- Legacy Excel cell notes and threaded comments are inspected but are not cleaned.
 - VBA / macro content and digital signatures are never rewritten; affected packages are inspection-only.
 - Complex Word style / theme interactions can contain hidden behavior that the current hidden-text inspection does not fully model.
 - Encrypted / password-protected OOXML files and legacy DOC / XLS / PPT formats are not supported.
@@ -219,7 +219,7 @@ A GitHub Pages visit still requires the initial page request. To use the app wit
 
 ## Dependencies
 
-Office Privacy Inspector v1.0.0 bundles **no third-party runtime library code**. OOXML ZIP and XML handling use browser-native Web Platform APIs.
+Office Privacy Inspector bundles **no third-party runtime library code**. OOXML ZIP and XML handling use browser-native Web Platform APIs.
 
 See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for details.
 
