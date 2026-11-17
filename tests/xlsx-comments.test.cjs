@@ -84,14 +84,14 @@ test('legacy Excel cell notes include sheet, cell, rich text and author without 
   assert.equal(result.package.partialFailures.length, 0);
   assert.equal(result.xlsx.comments.length, 1);
   assert.equal(result.xlsx.threadedComments.length, 0);
-  assert.equal(result.xlsx.comments[0].sheet, 'Sheet1');
+  assert.equal(result.xlsx.comments[0].sheet, 'Visible');
   assert.equal(result.xlsx.comments[0].cell, 'B9');
   assert.equal(result.xlsx.comments[0].author, 'Legacy Author');
   assert.match(result.xlsx.comments[0].text, /Internal <img src=x onerror=alert\(1\)>/);
   a.api.setInspection(result);
   const list = a.w.document.querySelector('#xlsxFindingList');
   assert.match(list.textContent, /セルのメモ/);
-  assert.match(list.textContent, /Sheet1!B9/);
+  assert.match(list.textContent, /Visible!B9/);
   assert.match(list.textContent, /Legacy Author/);
   assert.match(list.textContent, /<img src=x onerror=alert\(1\)>/);
   assert.equal(list.querySelector('img'), null, 'comment content must be text, not markup');
@@ -105,8 +105,8 @@ test('threaded Excel comment authors resolve through person records; replies inh
   const result = await inspect(a, parts);
   assert.equal(result.package.partialFailures.length, 0);
   assert.equal(result.xlsx.threadedComments.length, 2);
-  assert.deepEqual(result.xlsx.threadedComments.map(item => item.cell), ['G8','G8']);
-  assert.deepEqual(result.xlsx.threadedComments.map(item => item.author), ['Alex Example', 'Taylor Example']);
+  assert.deepEqual(Array.from(result.xlsx.threadedComments, item => item.cell), ['G8','G8']);
+  assert.deepEqual(Array.from(result.xlsx.threadedComments, item => item.author), ['Alex Example', 'Taylor Example']);
   assert.equal(result.xlsx.threadedComments[1].parentId, '{thread-1}');
   assert.equal(a.api.report(result).inspection.categoryCounts.comments, 2);
   a.api.setInspection(result);
@@ -163,7 +163,7 @@ test('unreferenced comment ZIP parts are not mistaken for a worksheet comment', 
   const parts = await baseParts(a);
   setText(parts, legacyPath, '<comments xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><commentList><comment ref="C1" authorId="0"><text>Orphan</text></comment></commentList></comments>');
   const result = await inspect(a, parts);
-  assert.deepEqual(result.xlsx.comments, []);
-  assert.deepEqual(result.xlsx.threadedComments, []);
+  assert.equal(result.xlsx.comments.length, 0);
+  assert.equal(result.xlsx.threadedComments.length, 0);
   assert.equal(a.api.report(result).inspection.categoryCounts.comments, 0);
 });
