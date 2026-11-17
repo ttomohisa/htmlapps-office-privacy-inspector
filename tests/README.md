@@ -120,10 +120,14 @@ The canonical repository check requires this test and runs all `.test.cjs` and `
 
 Native browser verification must separately exercise Japanese/English Help and loaded Reset at desktop and 393 × 252, final-note/action reachability through the dialog body, background-wheel isolation, Close/Cancel/Esc/backdrop/reopen, keyboard focus, and unchanged file/report outputs. Do not infer other cleanup branches from the shared-dialog tests.
 
-## v1.1.5 inspection hardening regression
+## v1.2.0 inspection hardening regression
 
 `inspection-hardening.test.cjs` builds temporary synthetic OOXML ZIPs from existing fixtures to cover Word inherited paragraph/character hidden text and explicit off overrides, PowerPoint picture-only notes, removal of note-only media without deleting shared slide assets, bounded deflate expansion, CRC mismatch causing partial inspection, and finding navigation into a populated Excel section. Tests run against source, readable build and committed public root. These are synthetic parser/ZIP tests, not a substitute for opening cleaned files in native Office or real-browser verification.
 
-## v1.1.5 introductory UI and release regressions
+## v1.2.0 introductory UI and release regressions
 
 `ui-copy-release.test.cjs` checks both languages, the shorter hero, absence of duplicated upload instructions, SVG drop icon, hidden mobile processing badge, version-free but accurate Help limitations, and the guarded GitHub Release workflow contract. The automatic tag and Release creation is exercised after a merge to `main`; a PR only validates the workflow's declared behavior.
+
+## v1.2.0 Excel comments regression
+
+`xlsx-comments.test.cjs` creates local synthetic workbook comment parts attached by OOXML relationships and validates legacy cell notes, threaded comments with author/person resolution, reply cell inheritance, rich-text reading, HTML injection safety, bilingual findings, counts-only report privacy, orphan-part handling, and partial inspections for missing or malformed related XML. All assertions are run against source, standalone build, and committed root HTML.
