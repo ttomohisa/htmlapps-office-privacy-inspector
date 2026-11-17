@@ -2,7 +2,13 @@
 
 ## Unreleased
 
-## [1.1.5] - 2026-11-17
+## [1.2.0] - 2026-11-17
+
+### Added
+- Inspect worksheet-linked legacy Excel cell notes and threaded comments, including cell references, authors, rich-text note content, message text, timestamps and replies.
+- Resolve threaded-comment authors through workbook person records; treat missing or damaged referenced comment/person XML as partial inspection, which disables cleanup.
+- Show both comment types in Excel findings and the summary preview in Japanese and English. Include their aggregate count in the counts-only JSON report without exporting comment text or author names.
+- Keep Excel comments inspection-only, without modifying comment or person parts.
 
 ### Fixed
 - Detect Word hidden text inherited from document defaults, paragraph styles and character styles, while respecting explicit hidden-text overrides.
