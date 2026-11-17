@@ -1220,14 +1220,79 @@
         while (n > 0) { n -= 1; name = String.fromCharCode(65 + (n % 26)) + name; n = Math.floor(n / 26); }
         return name || String(index || '');
       }
+      const XLSX_COMMENT_REL = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/comments';
+      const XLSX_STRICT_COMMENT_REL = 'http://purl.oclc.org/ooxml/officeDocument/relationships/comments';
+      const XLSX_THREADED_COMMENT_REL = 'http://schemas.microsoft.com/office/2017/10/relationships/threadedComment';
+      const XLSX_PERSON_REL = 'http://schemas.microsoft.com/office/2017/10/relationships/person';
+      function excelCommentText(node) {
+        const text = Array.from(node.getElementsByTagNameNS('*', 'text'))[0];
+        if (!text) return '';
+        const runs = Array.from(text.getElementsByTagNameNS('*', 't'));
+        return (runs.length ? runs.map(run => run.textContent || '').join('') : text.textContent || '').trim();
+      }
+      function readExcelLegacyComments(documentNode, sheet, part) {
+        const authorsNode = Array.from(documentNode.getElementsByTagNameNS('*', 'authors'))[0];
+        const authors = authorsNode ? Array.from(authorsNode.getElementsByTagNameNS('*', 'author')).map(node => node.textContent || '') : [];
+        return Array.from(documentNode.getElementsByTagNameNS('*', 'comment')).map(comment => {
+          const authorId = Number(attrByLocalName(comment, 'authorId'));
+          return {
+            sheet, cell: attrByLocalName(comment, 'ref'), author: Number.isSafeInteger(authorId) && authorId >= 0 ? (authors[authorId] || '') : '',
+            text: excelCommentText(comment), part
+          };
+        });
+      }
+      function readExcelThreadedComments(documentNode, sheet, part, people) {
+        const comments = Array.from(documentNode.getElementsByTagNameNS('*', 'threadedComment')).map(comment => {
+          const personId = attrByLocalName(comment, 'personId');
+          const content = Array.from(comment.getElementsByTagNameNS('*', 'text'))[0];
+          return {
+            sheet, cell: attrByLocalName(comment, 'ref'), author: people.get(personId) || personId || '',
+            text: (content?.textContent || '').trim(), date: attrByLocalName(comment, 'dT'),
+            id: attrByLocalName(comment, 'id'), parentId: attrByLocalName(comment, 'parentId'), part
+          };
+        });
+        // A reply can omit its cell reference. Resolve it through the parent chain.
+        const byId = new Map(comments.filter(item => item.id).map(item => [item.id, item]));
+        for (const item of comments) {
+          let current = item; const seen = new Set([item.id]);
+          while (!item.cell && current.parentId && !seen.has(current.parentId)) {
+            seen.add(current.parentId);
+            current = byId.get(current.parentId);
+            if (!current) break;
+            if (current.cell) item.cell = current.cell;
+          }
+        }
+        return comments;
+      }
+
       async function inspectXlsx(bytes, entries, generation, failures = []) {
-        const result = { hiddenSheets: [], hiddenRows: [], hiddenColumns: [], externalRelationships: [], externalFormulas: [], definedNames: [], connections: [], pivotCaches: [], slicerCaches: [], embeddedObjects: [], macroParts: [] };
+        const result = { comments: [], threadedComments: [], hiddenSheets: [], hiddenRows: [], hiddenColumns: [], externalRelationships: [], externalFormulas: [], definedNames: [], connections: [], pivotCaches: [], slicerCaches: [], embeddedObjects: [], macroParts: [] };
         const readXmlPart = async (path, required = false) => safeReadXmlPart(bytes, entries, path, failures, { required });
         const workbook = await readXmlPart('xl/workbook.xml', true);
         if (!workbook) return result;
         const workbookRels = await readXmlPart('xl/_rels/workbook.xml.rels');
         const relMap = new Map();
         if (workbookRels) for (const rel of Array.from(workbookRels.getElementsByTagNameNS('*', 'Relationship'))) relMap.set(rel.getAttribute('Id') || '', { type: rel.getAttribute('Type') || '', target: rel.getAttribute('Target') || '', mode: rel.getAttribute('TargetMode') || '' });
+        // Workbook-level person records resolve the author IDs in modern Excel comments.
+        const people = new Map();
+        for (const rel of relMap.values()) {
+          if (rel.type !== XLSX_PERSON_REL) continue;
+          const path = normalizePackagePath('xl/workbook.xml', rel.target);
+          if (rel.mode.toLowerCase() === 'external' || !path.startsWith('xl/') || !path.endsWith('.xml')) {
+            recordPartialFailure(failures, 'xl/_rels/workbook.xml.rels', new AppError('broken', 'Invalid Excel person relationship.'));
+            continue;
+          }
+          const persons = await readXmlPart(path, true);
+          if (!persons) continue;
+          if (persons.documentElement?.localName !== 'personList') {
+            recordPartialFailure(failures, path, new AppError('broken', 'Invalid Excel person list.'));
+            continue;
+          }
+          for (const person of Array.from(persons.getElementsByTagNameNS('*', 'person'))) {
+            const id = attrByLocalName(person, 'id');
+            if (id) people.set(id, attrByLocalName(person, 'displayName') || attrByLocalName(person, 'userId') || id);
+          }
+        }
         const sheets = [];
         for (const sheet of Array.from(workbook.getElementsByTagNameNS('*', 'sheet'))) {
           const id = attrByLocalName(sheet, 'id'); const rel = relMap.get(id);
@@ -1246,6 +1311,30 @@
           if (!sheet.path || !entries.has(sheet.path)) continue;
           if ((sheetIndex++ % 8) === 0) await cooperativeYield(generation);
           const doc = await readXmlPart(sheet.path); if (!doc) continue;
+          // The worksheet relationships identify the comment part for each sheet.
+          // Never interpret orphan ZIP entries as worksheet comments.
+          const sheetRelsPath = relsPathForPart(sheet.path);
+          const sheetRels = await readXmlPart(sheetRelsPath);
+          if (sheetRels) for (const rel of Array.from(sheetRels.getElementsByTagNameNS('*', 'Relationship'))) {
+            const type = rel.getAttribute('Type') || '';
+            const legacy = type === XLSX_COMMENT_REL || type === XLSX_STRICT_COMMENT_REL;
+            const threaded = type === XLSX_THREADED_COMMENT_REL;
+            if (!legacy && !threaded) continue;
+            const target = rel.getAttribute('Target') || '';
+            const part = normalizePackagePath(sheet.path, target);
+            if ((rel.getAttribute('TargetMode') || '').toLowerCase() === 'external' || !target || !part.startsWith('xl/') || !part.endsWith('.xml')) {
+              recordPartialFailure(failures, sheetRelsPath, new AppError('broken', 'Invalid Excel comment relationship.'));
+              continue;
+            }
+            const commentDoc = await readXmlPart(part, true);
+            if (!commentDoc) continue;
+            if (commentDoc.documentElement?.localName !== (legacy ? 'comments' : 'ThreadedComments')) {
+              recordPartialFailure(failures, part, new AppError('broken', 'Invalid Excel comment document.'));
+              continue;
+            }
+            if (legacy) result.comments.push(...readExcelLegacyComments(commentDoc, sheet.name, part));
+            else result.threadedComments.push(...readExcelThreadedComments(commentDoc, sheet.name, part, people));
+          }
           const rows = []; for (const row of Array.from(doc.getElementsByTagNameNS('*', 'row'))) if (xlsxOnOff(attrByLocalName(row, 'hidden'))) rows.push(Number(attrByLocalName(row, 'r')) || 0);
           if (rows.length) result.hiddenRows.push({ sheet: sheet.name, rows: rows.filter(Boolean), count: rows.filter(Boolean).length });
           const ranges = []; let colCount = 0;
