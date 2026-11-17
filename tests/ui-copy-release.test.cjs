@@ -57,11 +57,11 @@ test('Help keeps removal limitations without obsolete v1.0.0 references in eithe
     const help = a.w.document.querySelector('#helpDialog').textContent;
     assert.doesNotMatch(help, /v1\.0\.0/);
     if (language === 'ja') {
-      assert.match(help, /変更履歴、非表示シート、外部参照などは削除しません/);
-      assert.match(help, /コメントと発表者ノートは選択した場合だけ削除します/);
+      assert.match(help, /変更履歴、非表示シート、外部参照、Excelのメモ・コメントは削除しません/);
+      assert.match(help, /Word・PowerPointのコメントと発表者ノートは選択した場合だけ削除します/);
     } else {
-      assert.match(help, /Tracked changes, hidden sheets, and external references are not removed/);
-      assert.match(help, /Comments and speaker notes are removed only when selected/);
+      assert.match(help, /Tracked changes, hidden sheets, external references, and Excel cell notes and comments are not removed/);
+      assert.match(help, /Word\/PowerPoint comments and speaker notes are removed only when selected/);
     }
   }
 });
