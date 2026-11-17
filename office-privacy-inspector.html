@@ -1256,8 +1256,8 @@
         // A reply can omit its cell reference. Resolve it through the parent chain.
         const byId = new Map(comments.filter(item => item.id).map(item => [item.id, item]));
         for (const item of comments) {
-          let current = item; const seen = new Set([item.id]);
-          while (!item.cell && current.parentId && !seen.has(current.parentId)) {
+          let current = item; const seen = new Set([item.id]); let hops = 0;
+          while (!item.cell && current.parentId && !seen.has(current.parentId) && hops++ < 128) {
             seen.add(current.parentId);
             current = byId.get(current.parentId);
             if (!current) break;
