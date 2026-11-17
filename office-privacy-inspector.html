@@ -1248,7 +1248,7 @@
           const personId = attrByLocalName(comment, 'personId');
           const content = Array.from(comment.getElementsByTagNameNS('*', 'text'))[0];
           return {
-            sheet, cell: attrByLocalName(comment, 'ref'), author: people.get(personId) || personId || '',
+            sheet, cell: attrByLocalName(comment, 'ref'), personId, author: people.get(personId) || personId || '',
             text: (content?.textContent || '').trim(), date: attrByLocalName(comment, 'dT'),
             id: attrByLocalName(comment, 'id'), parentId: attrByLocalName(comment, 'parentId'), part
           };
@@ -1347,6 +1347,10 @@
             if (text && looksExternalWorkbookReference(text)) result.externalFormulas.push({ location: `${sheet.name}!${attrByLocalName(cell, 'r') || '—'}`, formula: text });
           }
           if (generation !== sourceGeneration) throw new AppError('stale');
+        }
+        // A threaded comment without its corresponding person record cannot be fully inspected.
+        if (result.threadedComments.some(item => item.personId && !people.has(item.personId))) {
+          recordPartialFailure(failures, 'xl/_rels/workbook.xml.rels', new AppError('broken', 'A threaded comment author is missing from the workbook person records.'));
         }
         let chartIndex = 0;
         for (const chartPath of Array.from(entries.keys()).filter(path => /^xl\/charts\/[^/]+\.xml$/i.test(path))) {
