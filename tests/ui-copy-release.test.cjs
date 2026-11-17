@@ -80,3 +80,10 @@ test('release workflow publishes only verified main versions with write access i
   assert.match(workflow, /--generate-notes/);
   assert.match(workflow, /dist\/index\.self-extract\.html/);
 });
+
+test('hero headline stays proportionate on desktop and phone widths', () => {
+  assert.match(html, /\.page-intro h1 \{ margin: 0; font-size: clamp\(22px, 2\.5vw, 26px\); line-height: 1\.3; letter-spacing: -\.025em; \}/);
+  const phone = html.match(/    @media \(max-width: 720px\) \{([\s\S]*?)\n    \}/)?.[1];
+  assert.ok(phone, 'phone rules exist');
+  assert.match(phone, /      \.page-intro h1 \{ font-size: 21px; \}/);
+});
