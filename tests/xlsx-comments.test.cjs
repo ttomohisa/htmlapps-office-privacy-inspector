@@ -38,8 +38,8 @@ function makeZip(parts) {
   end.writeUInt32LE(centralBytes.length, 12); end.writeUInt32LE(offset, 16);
   return Buffer.concat([...locals, centralBytes, end]);
 }
-async function baseParts(a) {
-  const bytes = new Uint8Array(fs.readFileSync(path.join(fixtures, 'clean.xlsx')));
+async function baseParts(a, fixtureName = 'clean.xlsx') {
+  const bytes = new Uint8Array(fs.readFileSync(path.join(fixtures, fixtureName)));
   const entries = a.api.parseZipDirectory(bytes), parts = new Map();
   for (const [name, entry] of entries) parts.set(name, Buffer.from(await a.api.readZipEntry(bytes, entry)));
   assert.ok(parts.has('xl/worksheets/sheet1.xml'), 'base fixture contains a worksheet');
@@ -166,4 +166,37 @@ test('unreferenced comment ZIP parts are not mistaken for a worksheet comment', 
   assert.equal(result.xlsx.comments.length, 0);
   assert.equal(result.xlsx.threadedComments.length, 0);
   assert.equal(a.api.report(result).inspection.categoryCounts.comments, 0);
+});
+
+test('unresolved author identity is partial, rather than silently treating inspection as complete', async t => {
+  const a = app(); t.after(a.close);
+  const parts = await baseParts(a); addThreaded(parts);
+  setText(parts, personPath, '<personList xmlns="' + threadedNs + '">' +
+    '<person id="{person-1}" displayName="Alex Example"/></personList>');
+  const result = await inspect(a, parts);
+  assert.equal(result.xlsx.threadedComments.length, 2);
+  assert.equal(result.xlsx.threadedComments[1].author, '{person-2}');
+  assert.equal(result.package.cleanupBlockedReasons.includes('partial'), true);
+  assert.equal(a.api.report(result).inspection.categoryCounts.comments, null);
+});
+
+test('metadata cleanup preserves legacy and threaded comments and their author records', async t => {
+  const a = app(); t.after(a.close);
+  const parts = await baseParts(a, 'core-properties.xlsx'); addLegacy(parts); addThreaded(parts);
+  const source = a.file('private-notes.xlsx', makeZip(parts));
+  const before = await a.api.inspectOfficeFile(source, a.api.generation, false);
+  assert.ok(before.core.creator, 'fixture has metadata to clean');
+  assert.equal(before.xlsx.comments.length + before.xlsx.threadedComments.length, 3);
+  const cleanedBytes = await a.api.buildCleanedOfficeBytes(source, before, ['core:creator'], a.api.generation);
+  const after = await a.api.inspectOfficeFile(a.file('cleaned.xlsx', cleanedBytes), a.api.generation, false);
+  a.api.validateCleanupReinspection(before, after, ['core:creator']);
+  assert.equal(after.core.creator, '');
+  assert.equal(after.xlsx.comments.length + after.xlsx.threadedComments.length, 3, 'comment findings remain after cleaning unrelated metadata');
+  const outputEntries = a.api.parseZipDirectory(cleanedBytes);
+  for (const name of [legacyPath, threadedPath, personPath]) {
+    assert.ok(outputEntries.has(name));
+    const copied = await a.api.readZipEntry(cleanedBytes, outputEntries.get(name));
+    assert.deepEqual(Buffer.from(copied), parts.get(name), name + ' was not modified');
+  }
+  assert.equal(a.api.report(before, after, 'verified').cleanup.after.categoryCounts.comments, 3);
 });
