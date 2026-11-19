@@ -64,6 +64,39 @@ async function auditHeader(page, label) {
   }
 }
 
+async function auditResultSummary(page, width, label) {
+  const layout = await page.locator('#resultState').evaluate(panel => {
+    const grid = panel.querySelector('.stat-grid');
+    const cells = Array.from(grid.querySelectorAll('.stat-card')).filter(item => getComputedStyle(item).display !== 'none');
+    const preview = panel.querySelector('.summary-preview');
+    const callout = Array.from(panel.querySelectorAll('.result-callout')).find(item => getComputedStyle(item).display !== 'none');
+    const notice = panel.querySelector('.notice');
+    const rect = el => { const r = el.getBoundingClientRect(); return { x:r.x, y:r.y, right:r.right, bottom:r.bottom }; };
+    return {
+      outerBorder: parseFloat(getComputedStyle(panel).borderTopWidth),
+      groupBorder: parseFloat(getComputedStyle(grid).borderTopWidth),
+      cellBorders: cells.map(item => parseFloat(getComputedStyle(item).borderTopWidth)),
+      cells: cells.map(rect), group: rect(grid),
+      previewTopBorder: parseFloat(getComputedStyle(preview).borderTopWidth),
+      previewSideBorders: [parseFloat(getComputedStyle(preview).borderLeftWidth), parseFloat(getComputedStyle(preview).borderRightWidth)],
+      previewBackground: getComputedStyle(preview).backgroundColor,
+      calloutAccent: callout ? parseFloat(getComputedStyle(callout).borderLeftWidth) : 0,
+      noticeAccent: parseFloat(getComputedStyle(notice).borderLeftWidth)
+    };
+  });
+  assert.ok(layout.outerBorder >= 1 && layout.groupBorder >= 1, label + ': main and shared counter group retain useful borders');
+  assert.equal(layout.cells.length, 4, label + ': expected four visible result counters');
+  assert.ok(layout.cellBorders.every(value => value === 0), label + ': counters do not have separate card borders');
+  assert.ok(layout.cells.every(cell => cell.x >= layout.group.x - 1 && cell.right <= layout.group.right + 1), label + ': counters stay in the group');
+  assert.equal(layout.previewTopBorder, 1, label + ': preview gets a subtle section divider');
+  assert.deepEqual(layout.previewSideBorders, [0,0], label + ': preview has no enclosing card');
+  assert.equal(layout.previewBackground, 'rgba(0, 0, 0, 0)', label + ': preview uses the parent background');
+  assert.ok(layout.calloutAccent >= 2 && layout.noticeAccent >= 2, label + ': status and notice retain subtle accent bars');
+  const rows = new Set(layout.cells.map(cell => Math.round(cell.y)));
+  if (width >= 1000) assert.equal(rows.size, 1, label + ': four counters fit on one desktop row');
+  if (width <= cfg.bp) assert.equal(rows.size, 2, label + ': two-column phone counter layout');
+}
+
 async function main() {
   fs.mkdirSync(evidence, { recursive: true });
   const browser = await chromium.launch();
@@ -102,6 +135,7 @@ async function main() {
           if (w <= cfg.bp) await bounds(page.locator(cfg.nav), w, height, label);
         }
         await page.evaluate(() => scrollTo({left:0,top:0,behavior:'instant'})); await settle(page);
+        await auditResultSummary(page, width, label);
         assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), label + ': page width');
         await auditHeader(page, label);
         if (file === 'dist/index.html' && [320,360,390,1360].includes(width)) await page.screenshot({path:path.join(evidence, `${language}-${width}-main.png`)});
