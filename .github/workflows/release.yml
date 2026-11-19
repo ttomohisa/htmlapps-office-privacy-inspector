@@ -104,8 +104,9 @@ jobs:
           fi
 
           # Refuse to repoint a pre-existing version tag to a new commit.
-          tag_info="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$tag" --jq '.object.type + " " + .object.sha' 2>/dev/null || true)"
-          if [[ -n "$tag_info" ]]; then
+          # A missing tag returns HTTP 404. Check the gh exit status, not just its
+          # stdout: with --jq, an error response can otherwise yield nonempty text.
+          if tag_info="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$tag" --jq '.object.type + " " + .object.sha' 2>/dev/null)"; then
             tag_type="${tag_info%% *}"
             tag_sha="${tag_info#* }"
             if [[ "$tag_type" != "commit" || "$tag_sha" != "$RELEASE_SHA" ]]; then
