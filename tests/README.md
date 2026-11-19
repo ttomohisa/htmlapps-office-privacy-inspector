@@ -139,3 +139,7 @@ Native browser verification must separately exercise Japanese/English Help and l
 ## Mobile header scroll behavior
 
 The source contract verifies that the header remains sticky only above the 720px breakpoint. Chromium layout tests scroll the results page and confirm the header disappears with phone scrolling but stays fixed on desktop. The phone-only section scroll offset is reduced so “View findings” and cleanup completion do not leave header-sized blank space.
+
+## v1.2.0 file-selected intro visibility
+
+`intro-state.test.cjs` verifies that the headline, supporting description, and local-processing badge share one intro wrapper. They disappear on loading, remain hidden on results, file replacement, language changes, and errors, then return with the upload screen on reset. Chromium checks initial and inspected states in Japanese and English across desktop and phone widths.
