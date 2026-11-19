@@ -339,7 +339,7 @@
   </header>
 
   <main class="main">
-    <section class="page-intro" aria-labelledby="heroTitle">
+    <section class="page-intro" id="pageIntro" aria-labelledby="heroTitle">
       <div>
         <h1 id="heroTitle" data-i18n="introTitle">Officeファイルの作成者やコメントを確認</h1>
         <p data-i18n="lead">非表示シートや発表者ノート、外部参照なども調べます。</p>
@@ -2213,6 +2213,7 @@
       }
       function setProgress(percent, phaseKey) { const value = Math.max(0, Math.min(100, percent)); $('#progressBar').style.width = `${value}%`; $('#loadingPercent').textContent = `${Math.round(value)}%`; $('#loadingPhase').textContent = translate(phaseKey); }
       function showOnly(state) {
+        $('#pageIntro').hidden = state !== 'empty';
         $('#reportSection').hidden = state !== 'result';
         reportReadyGeneration = state === 'result' && currentResult ? sourceGeneration : -1;
         syncInspectionReport();
