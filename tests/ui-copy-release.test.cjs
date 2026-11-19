@@ -75,6 +75,8 @@ test('release workflow publishes only verified main versions with write access i
   assert.match(workflow, /uses: actions\/download-artifact@v8/);
   assert.match(workflow, /gh release view "\$tag"/);
   assert.match(workflow, /Refuse to repoint a pre-existing version tag/);
+  assert.match(workflow, /if tag_info="\$\(gh api [^\n]+\)"; then/, 'a missing tag must be identified by gh API exit status');
+  assert.doesNotMatch(workflow, /tag_info="[^\n]+\|\| true\)/, 'ignore HTTP error bodies instead of interpreting them as tag refs');
   assert.match(workflow, /gh release create "\$tag"/);
   assert.match(workflow, /--target "\$RELEASE_SHA"/);
   assert.match(workflow, /--generate-notes/);
