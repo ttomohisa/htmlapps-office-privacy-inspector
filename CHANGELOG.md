@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+### Fixed
+- Repair the post-merge GitHub Release workflow: distinguish an absent version tag (API 404) from an existing tag by checking the GitHub CLI exit status. Keep protection against changing an existing tag. This allows the v1.2.0 Release to be created after verified builds.
+
 ## [1.2.0] - 2026-11-17
 
 ### Added
