@@ -131,9 +131,15 @@ async function main() {
           await page.setViewportSize({width:w,height}); await settle(page);
           assert.equal(await page.locator('body > footer').isVisible(), w > cfg.bp, label + ': footer resize');
           assert.equal(await page.locator('.local-badge').isVisible(), w > cfg.bp, label + ': processing badge resize');
+          assert.equal(await page.locator('.app-header').evaluate(el => getComputedStyle(el).position), w <= cfg.bp ? 'static' : 'sticky', label + ': header position breakpoint');
           assert.equal(await page.locator(cfg.nav).isVisible(), w <= cfg.bp, label + ': functional bar');
           if (w <= cfg.bp) await bounds(page.locator(cfg.nav), w, height, label);
         }
+        await page.evaluate(() => scrollTo({left:0,top:500,behavior:'instant'})); await settle(page);
+        const scrollState = await page.locator('.app-header').evaluate(el => ({ top:el.getBoundingClientRect().top, scrollY:window.scrollY }));
+        assert.ok(scrollState.scrollY > 80, label + ': enough vertical content to test header scrolling');
+        if (width <= cfg.bp) assert.ok(scrollState.top < -40, label + ': phone header scrolls off-screen');
+        else assert.ok(scrollState.top >= -1, label + ': desktop header stays at top');
         await page.evaluate(() => scrollTo({left:0,top:0,behavior:'instant'})); await settle(page);
         await auditResultSummary(page, width, label);
         assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), label + ': page width');
