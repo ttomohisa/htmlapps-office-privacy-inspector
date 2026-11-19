@@ -23,6 +23,7 @@
 - Replace the ambiguous upward-file arrow in the drop area with a downward arrow and tray icon.
 - Refine the result summary hierarchy: keep the outer panel and status callout, group counters behind one quiet border, use a compact notice, and present found-content previews with whitespace and dividers rather than nested cards.
 - Hide the informational fully-local badge on phone layouts while preserving desktop visibility and browser-local processing.
+- Let the phone header scroll with the page (720px and narrower), while keeping the desktop header sticky; remove the unused header-height offset when scrolling to result sections on phones.
 - Remove outdated version references from the Help and format-specific descriptions without changing the cleanup limitations.
 - On `main` updates, verify build and regressions before tagging the app version and publishing a GitHub Release with standalone files. Existing versions are not duplicated or retagged.
 
