@@ -135,3 +135,7 @@ Native browser verification must separately exercise Japanese/English Help and l
 ## v1.2.0 result summary layout regression
 
 `result-summary-layout.test.cjs` preserves the bordered outer result panel, a single grouped counter strip, non-card preview rows, gentle status and notice accents, and the existing clean/review states. The Chromium phone layout regression also checks real counter geometry, horizontal bounds and the single-row desktop/two-column phone layouts in Japanese and English.
+
+## Mobile header scroll behavior
+
+The source contract verifies that the header remains sticky only above the 720px breakpoint. Chromium layout tests scroll the results page and confirm the header disappears with phone scrolling but stays fixed on desktop. The phone-only section scroll offset is reduced so “View findings” and cleanup completion do not leave header-sized blank space.
