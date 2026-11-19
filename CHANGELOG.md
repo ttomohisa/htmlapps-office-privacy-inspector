@@ -1,16 +1,41 @@
 # Changelog
 
+## Unreleased
+
+## [1.2.0] - 2026-11-17
+
+### Added
+- Inspect worksheet-linked legacy Excel cell notes and threaded comments, including cell references, authors, rich-text note content, message text, timestamps and replies.
+- Resolve threaded-comment authors through workbook person records; treat missing or damaged referenced comment/person XML as partial inspection, which disables cleanup.
+- Show both comment types in Excel findings and the summary preview in Japanese and English. Include their aggregate count in the counts-only JSON report without exporting comment text or author names.
+- Keep Excel comments inspection-only, without modifying comment or person parts.
+
+### Fixed
+- Detect Word hidden text inherited from document defaults, paragraph styles and character styles, while respecting explicit hidden-text overrides.
+- Detect PowerPoint speaker notes containing non-text shapes and media. Removing notes also removes note-only media; assets referenced by surviving slides or other parts are preserved.
+- Apply bounded decompression and CRC-32 verification to inspected ZIP parts. Damaged XML is treated as a partial inspection, preventing cleanup.
+- Scroll View findings to the first populated finding category.
+- Display non-text PowerPoint note findings in Japanese and English.
+
+### UI and release
+- Replace the introductory hero with shorter, concrete Japanese/English copy and remove the duplicate file-selection heading and explanation.
+- Reduce hero heading size to a restrained 22–26px on desktop and 21px at the phone breakpoint.
+- Replace the ambiguous upward-file arrow in the drop area with a downward arrow and tray icon.
+- Refine the result summary hierarchy: keep the outer panel and status callout, group counters behind one quiet border, use a compact notice, and present found-content previews with whitespace and dividers rather than nested cards.
+- Hide the informational fully-local badge on phone layouts while preserving desktop visibility and browser-local processing.
+- Let the phone header scroll with the page (720px and narrower), while keeping the desktop header sticky; remove the unused header-height offset when scrolling to result sections on phones.
+- Hide the hero headline, description, and fully-local badge together when a file is selected (including loading, results and error states); restore them only on reset.
+- Remove outdated version references from the Help and format-specific descriptions without changing the cleanup limitations.
+- On `main` updates, verify build and regressions before tagging the app version and publishing a GitHub Release with standalone files. Existing versions are not duplicated or retagged.
+
+### Other included UI updates
+- Hide the informational footer at 720px and below; move build information into the end of Help.
+- Clarify Japanese and English Help without changing the existing usage and caution content.
+
 ## 1.1.4 - 2026-10-27
 
 - Keep the header version badge visible at narrow widths by truncating only the app title.
 - Remove redundant language-switching instructions from Japanese and English Help.
-
-
-## Unreleased
-
-- Hide the informational footer at 720px and below without hiding functional mobile controls; move existing build information to the quiet end of Help and preserve keyboard disclosure activation.
-
-- Clarify Japanese and English help by removing internal layout, implementation, and audit commentary while preserving usage guidance and cautions.
 
 ## [1.1.3] - 2026-10-11
 

@@ -6,7 +6,7 @@ function fixture(format = 'docx') {
   const result = { file: { name: secret + '.' + format, format, extension: format }, core: { creator: secret }, extended: { company: secret }, custom: [{ name: secret, value: secret }], package: { entryCount: 8, signed: false, macroEnabled: false, macroParts: [], partialFailures: [], duplicateRelationships: [], cleanupBlockedReasons: [] } };
   const item = { name: secret, author: secret, text: secret, path: 'C:\\' + secret, target: 'https://' + secret + '.invalid', count: 2 };
   result.docx = { comments: [item], revisions: [item], hiddenText: [item], rsidCount: 2, externalRelationships: [item], embeddedObjects: [item], customXml: [item] };
-  result.xlsx = { hiddenSheets: [item], hiddenRows: [item], hiddenColumns: [item], externalRelationships: [item], externalFormulas: [item], definedNames: [item], connections: [item], pivotCaches: [item], slicerCaches: [item], embeddedObjects: [item] };
+  result.xlsx = { comments: [item], threadedComments: [item], hiddenSheets: [item], hiddenRows: [item], hiddenColumns: [item], externalRelationships: [item], externalFormulas: [item], definedNames: [item], connections: [item], pivotCaches: [item], slicerCaches: [item], embeddedObjects: [item] };
   result.pptx = { comments: [item], notes: [item], hiddenSlides: [item], offSlideObjects: [item], externalRelationships: [item], embeddedObjects: [item], customXml: [item] };
   return result;
 }
@@ -16,7 +16,7 @@ for (const format of ['docx', 'xlsx', 'pptx']) test(`${format} report is counts-
   assert.deepEqual(Object.keys(report).sort(), ['appVersion', 'caveat', 'cleanup', 'format', 'inspection', 'schemaVersion']);
   assert.equal(report.schemaVersion, 1); assert.equal(report.format, format); assert.equal(report.inspection.completeness, 'complete');
   assert.equal(report.inspection.categoryCounts.metadata, 2); assert.equal(report.inspection.categoryCounts.customProperties, 1);
-  assert.equal(report.inspection.categoryCounts.comments, format === 'xlsx' ? null : 1);
+  assert.equal(report.inspection.categoryCounts.comments, format === 'xlsx' ? 2 : 1);
   assert.equal(report.cleanup.status, 'not_performed'); assert.equal(report.cleanup.after, null);
   const json = JSON.stringify(report); assert.ok(!json.includes(secret)); assert.ok(!/author|path|target|fileName|filename|https:|C:\\\\|errorMessage/.test(json));
   assert.match(report.caveat, /zero findings/i); assert.match(report.caveat, /safe|safety/i); assert.match(report.caveat, /anonym/i);

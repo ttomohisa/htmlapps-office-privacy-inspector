@@ -28,7 +28,7 @@ function app({ language = 'en-US', savedLanguage = null, storageUnavailable = fa
   let code = [...source.matchAll(/<script>([\s\S]*?)<\/script>/g)].at(-1)[1];
   code = code.replace('__APP_CONFIG_JSON__', JSON.stringify(config)).replace('__BUILD_MANIFEST_JSON__', '{}').replace('__EMBEDDED_ASSET_BUNDLE_JSON__', '{}');
   code = code.replace(/\}\)\(\);\s*$/, `window.testApi = {
-    inspectSelectedFile, resetApp, inspectOfficeFile, parseZipDirectory, readZipEntry, readZipText, rebuildZip,
+    inspectSelectedFile, resetApp, inspectOfficeFile, parseZipDirectory, readZipEntry, readZipText, rebuildZip, inflateRaw,
     buildCleanedOfficeBytes, validateCleanupReinspection, createCleanedCopy, updateCleanupSelection,
     get result() { return currentResult; }, get after() { return cleanupAfterResult; },
     get generation() { return sourceGeneration; },

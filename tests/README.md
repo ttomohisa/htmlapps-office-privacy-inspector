@@ -119,3 +119,27 @@ Header regressions exercise the actual app startup and language click handler wi
 The canonical repository check requires this test and runs all `.test.cjs` and `.test.mjs` files against the source, generated readable HTML, and public root alias. Install the pinned test-only dependencies first (`npm ci --prefix tests --ignore-scripts --no-audit --no-fund`). `npm --prefix tests test` also discovers the new CJS tests; the separate icon MJS test remains included by the canonical checker.
 
 Native browser verification must separately exercise Japanese/English Help and loaded Reset at desktop and 393 × 252, final-note/action reachability through the dialog body, background-wheel isolation, Close/Cancel/Esc/backdrop/reopen, keyboard focus, and unchanged file/report outputs. Do not infer other cleanup branches from the shared-dialog tests.
+
+## v1.2.0 inspection hardening regression
+
+`inspection-hardening.test.cjs` builds temporary synthetic OOXML ZIPs from existing fixtures to cover Word inherited paragraph/character hidden text and explicit off overrides, PowerPoint picture-only notes, removal of note-only media without deleting shared slide assets, bounded deflate expansion, CRC mismatch causing partial inspection, and finding navigation into a populated Excel section. Tests run against source, readable build and committed public root. These are synthetic parser/ZIP tests, not a substitute for opening cleaned files in native Office or real-browser verification.
+
+## v1.2.0 introductory UI and release regressions
+
+`ui-copy-release.test.cjs` checks both languages, the shorter hero, absence of duplicated upload instructions, SVG drop icon, hidden mobile processing badge, version-free but accurate Help limitations, and the guarded GitHub Release workflow contract. The automatic tag and Release creation is exercised after a merge to `main`; a PR only validates the workflow's declared behavior.
+
+## v1.2.0 Excel comments regression
+
+`xlsx-comments.test.cjs` creates local synthetic workbook comment parts attached by OOXML relationships and validates legacy cell notes, threaded comments with author/person resolution, reply cell inheritance, rich-text reading, HTML injection safety, bilingual findings, counts-only report privacy, orphan-part handling, and partial inspections for missing or malformed related XML. All assertions are run against source, standalone build, and committed root HTML.
+
+## v1.2.0 result summary layout regression
+
+`result-summary-layout.test.cjs` preserves the bordered outer result panel, a single grouped counter strip, non-card preview rows, gentle status and notice accents, and the existing clean/review states. The Chromium phone layout regression also checks real counter geometry, horizontal bounds and the single-row desktop/two-column phone layouts in Japanese and English.
+
+## Mobile header scroll behavior
+
+The source contract verifies that the header remains sticky only above the 720px breakpoint. Chromium layout tests scroll the results page and confirm the header disappears with phone scrolling but stays fixed on desktop. The phone-only section scroll offset is reduced so “View findings” and cleanup completion do not leave header-sized blank space.
+
+## v1.2.0 file-selected intro visibility
+
+`intro-state.test.cjs` verifies that the headline, supporting description, and local-processing badge share one intro wrapper. They disappear on loading, remain hidden on results, file replacement, language changes, and errors, then return with the upload screen on reset. Chromium checks initial and inspected states in Japanese and English across desktop and phone widths.

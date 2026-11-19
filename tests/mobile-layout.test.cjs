@@ -22,3 +22,11 @@ test('the existing Japanese and English privacy badge remains canonical', () => 
   assert.match(html, /localBadge:\s*'完全ローカル処理'/);
   assert.match(html, /localBadge:\s*'Fully local processing'/);
 });
+
+test('phone header scrolls away while desktop header remains sticky', () => {
+  assert.match(html, /\.app-header \{\s*position: sticky; z-index: 30; top: 0;/);
+  const mobile = html.match(/@media \(max-width: 720px\) \{([\s\S]*?)\n    \}/)?.[1];
+  assert.ok(mobile, 'the main mobile media query exists');
+  assert.match(mobile, /\.app-header \{ position: static; \}/);
+  assert.match(mobile, /\.section-panel, \.cleanup-output \{ scroll-margin-top: 12px; \}/);
+});
