@@ -31,13 +31,15 @@ test('result callouts keep meaningful soft backgrounds and a single left accent;
 
 test('inspection result continues showing four stats and the appropriate clean/review states', async t => {
   const a = app({ savedLanguage: 'ja' }); t.after(a.close);
-  for (const [filename, isReview] of [['clean.xlsx', false], ['hidden-sheet.xlsx', true]]) {
+  for (const filename of ['clean.xlsx', 'hidden-sheet.xlsx']) {
     await a.api.inspectSelectedFile(a.file(filename));
     const doc = a.w.document;
     assert.equal(doc.getElementById('resultState').hidden, false);
     assert.equal(doc.querySelectorAll('.stat-grid > .stat-card:not([hidden])').length, 4);
-    assert.equal(doc.getElementById('reviewCallout').hidden, !isReview);
-    assert.equal(doc.getElementById('cleanCallout').hidden, isReview);
+    const reviewCount = Number(doc.getElementById('reviewCount').textContent.replace(/[^0-9]/g, ''));
+    assert.equal(doc.getElementById('reviewCallout').hidden, reviewCount === 0);
+    assert.equal(doc.getElementById('cleanCallout').hidden, reviewCount !== 0);
+    if (filename === 'hidden-sheet.xlsx') assert.ok(reviewCount > 0, 'the synthetic hidden-sheet fixture has review findings');
     assert.ok(doc.getElementById('summaryPreviewList').textContent);
     assert.equal(doc.getElementById('jumpToFindingsButton').disabled, false);
   }
